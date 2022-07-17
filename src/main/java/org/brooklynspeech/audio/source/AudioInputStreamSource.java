@@ -12,10 +12,6 @@ public class AudioInputStreamSource implements Source {
     }
 
     @Override
-    public void open() {
-    }
-
-    @Override
     public boolean isOpen() {
         return true;
     }

@@ -6,8 +6,6 @@ public interface Source {
 
     int read(byte[] b, int off, int len) throws IOException;
 
-    void open();
-    
     boolean isOpen();
 
     void start();
