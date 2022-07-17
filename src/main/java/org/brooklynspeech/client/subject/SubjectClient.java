@@ -39,7 +39,6 @@ public class SubjectClient implements Client {
 
         while (!this.stop && this.source.isOpen()) {
             len = this.source.read(b, 0, b.length);
-            System.out.println(len);
 
             if (len == -1) {
                 break;
