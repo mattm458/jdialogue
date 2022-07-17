@@ -20,11 +20,13 @@ public class SocketSink implements Sink {
 
     }
 
+    @Override
     public void write(byte[] b, int len) throws IOException {
         DatagramPacket chunk = new DatagramPacket(b, len, this.address, this.port);
         this.socket.send(chunk);
     }
 
-    public void close() {
+    @Override
+    public void close() throws IOException {
     }
 }

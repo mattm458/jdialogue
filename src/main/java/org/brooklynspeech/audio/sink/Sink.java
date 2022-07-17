@@ -6,5 +6,5 @@ public interface Sink {
 
     void write(byte[] b, int len) throws IOException;
 
-    void close();
+    void close() throws IOException;
 }

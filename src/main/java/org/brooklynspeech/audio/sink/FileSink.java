@@ -21,22 +21,19 @@ public class FileSink implements Sink {
         this.out = new ByteArrayOutputStream();
     }
 
+    @Override
     public void write(byte[] b, int len) {
         this.out.write(b, 0, len);
     }
 
-    public void close() {
+    @Override
+    public void close() throws IOException {
         final byte rec[] = out.toByteArray();
         AudioInputStream stream = new AudioInputStream(
                 new ByteArrayInputStream(rec),
                 this.format,
                 rec.length / this.format.getFrameSize());
 
-        try {
-            AudioSystem.write(stream, AudioFileFormat.Type.WAVE, new File(this.filename));
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-            System.exit(1);
-        }
+        AudioSystem.write(stream, AudioFileFormat.Type.WAVE, new File(this.filename));
     }
 }

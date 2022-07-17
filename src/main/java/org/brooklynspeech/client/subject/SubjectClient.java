@@ -6,13 +6,16 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import org.brooklynspeech.audio.sink.Sink;
 import org.brooklynspeech.audio.source.Source;
+import org.brooklynspeech.client.Client;
 
-public class SubjectClient {
+public class SubjectClient implements Client {
 
     final Source source;
     final int chunkSize;
 
     final ArrayList<Sink> sinks;
+
+    boolean stop;
 
     public SubjectClient(Source source, int samples, int bitrate, int channels, int chunkSize)
             throws IOException, UnknownHostException {
@@ -20,6 +23,8 @@ public class SubjectClient {
         this.chunkSize = chunkSize;
 
         this.sinks = new ArrayList<>();
+
+        this.stop = false;
     }
 
     public void addSink(Sink sink) {
@@ -27,11 +32,14 @@ public class SubjectClient {
     }
 
     public void start() throws SocketException, IOException {
+        this.source.start();
+        
         byte[] b = new byte[this.chunkSize];
         int len;
 
-        while (this.source.isOpen()) {
+        while (!this.stop && this.source.isOpen()) {
             len = this.source.read(b, 0, b.length);
+            System.out.println(len);
 
             if (len == -1) {
                 break;
@@ -41,12 +49,17 @@ public class SubjectClient {
                 s.write(b, len);
             }
         }
-    }
-    
-    public void stop() {
+
         this.source.stop();
-        for (Sink s: this.sinks) {
+        this.source.close();
+
+        for (Sink s : this.sinks) {
             s.close();
         }
+    }
+
+    @Override
+    public void stop() {
+        this.stop = true;
     }
 }
