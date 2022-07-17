@@ -11,11 +11,13 @@
         <maven.compiler.target>18</maven.compiler.target>
         <exec.mainClass>org.brooklynspeech.jdialogue.Jdialogue</exec.mainClass>
     </properties>
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-        </resource>
-    </resources>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
     <repositories>
         <repository>
             <id>snapshots-repo</id>
