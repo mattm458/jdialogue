@@ -5,25 +5,31 @@ import org.brooklynspeech.audio.source.Source;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.concurrent.BlockingQueue;
 import javax.sound.sampled.AudioFormat;
 import org.brooklynspeech.asr.alignment.Transcript;
 import org.brooklynspeech.audio.sink.ArraySink;
 import org.brooklynspeech.pipeline.Chunk;
+import org.brooklynspeech.pipeline.Context;
 
 public class VoskRecognizer {
 
     private final Recognizer recognizer;
     private final Source source;
     private final AudioFormat format;
+    
+    private final Context context;
 
     private final int chunkSize;
     private boolean stopped;
 
     private final ObjectMapper objectMapper;
 
-    public VoskRecognizer(Source source, int chunkSize, AudioFormat format) throws IOException {
+    private final BlockingQueue<Chunk> q;
+
+    public VoskRecognizer(Source source, int chunkSize, AudioFormat format, BlockingQueue<Chunk> q) throws IOException {
         this.source = source;
-        this.recognizer = new Recognizer(new Model("vosk-model-small-en-us-0.15"), 16000);
+        this.recognizer = new Recognizer(new Model("vosk-model-en-us-0.21"), 16000);
         this.recognizer.setWords(true);
         this.chunkSize = chunkSize;
         this.stopped = false;
@@ -31,6 +37,9 @@ public class VoskRecognizer {
         this.format = format;
 
         this.objectMapper = new ObjectMapper();
+
+        this.q = q;
+        this.context = new Context();
     }
 
     public void start() throws IOException {
@@ -60,7 +69,7 @@ public class VoskRecognizer {
                 if (t.result.isEmpty()) {
                     continue;
                 }
-                
+
                 System.out.println(t.text);
 
                 // Compute the buffer start and end indices from the transcript data
@@ -71,11 +80,9 @@ public class VoskRecognizer {
 
                 // Retrieve the wav data from the buffer for the chunk
                 byte[] wavData = buffer.range(startIdx, endIdx);
-                
+
                 // Create a new Chunk with the transcript and wav data
-                Chunk chunk = new Chunk();
-                chunk.setTranscript(t);
-                chunk.setWavData(wavData);
+                this.q.add(new Chunk(this.context, t, wavData, 0));
             }
         }
     }
