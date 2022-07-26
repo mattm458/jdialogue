@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline.message;
+package org.brooklynspeech.pipeline_old.message;
 
 import java.util.ArrayList;
 

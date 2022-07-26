@@ -16,18 +16,9 @@ dur = Get total duration
 
 select Sound sound
 To Pitch... 0 75 600
-f0_min = Get minimum... 0 0 Hertz Parabolic
-f0_max = Get maximum... 0 0 Hertz Parabolic
 f0_mean = Get mean... 0 0 Hertz
-f0_std = Get standard deviation... 0 0 Hertz
-f0_mas = Get mean absolute slope... Hertz
-f0_pct1 = Get quantile... 0 0 0.01 Hertz
-f0_pct99 = Get quantile... 0 0 0.99 Hertz
-f0_q1 = Get quantile... 0 0 0.25 Hertz
-f0_q2 = Get quantile... 0 0 0.5 Hertz
-f0_q3 = Get quantile... 0 0 0.75 Hertz
-f0_min_time = Get time of minimum... 0 0 Hertz Parabolic
-f0_max_time = Get time of maximum... 0 0 Hertz Parabolic
+f0_pct5 = Get quantile... 0 0 0.05 Hertz
+f0_pct95 = Get quantile... 0 0 0.95 Hertz
 select Pitch sound
 Remove
 
@@ -38,17 +29,7 @@ Remove
 select Sound sound
 if dur > 6.4 / 100.0
     To Intensity... 100 0 no
-    int_min = Get minimum... 0 0 Parabolic
-    int_max = Get maximum... 0 0 Parabolic
     int_mean = Get mean... 0 0 energy
-    int_pct1 = Get quantile... 0 0 0.01
-    int_pct99 = Get quantile... 0 0 0.99
-    int_q1 = Get quantile... 0 0 0.25
-    int_q2 = Get quantile... 0 0 0.5
-    int_q3 = Get quantile... 0 0 0.75
-    int_std = Get standard deviation... 0 0
-    int_min_time = Get time of minimum... 0 0 Parabolic
-    int_max_time = Get time of maximum... 0 0 Parabolic
 endif
 
 #######
@@ -113,59 +94,26 @@ endif
 # Output #
 ##########
 
-text$ = "dur,'dur:3'"
+text$ = "dur,'dur'"
 appendInfoLine: text$
-text$ = "f0_min,'f0_min:3'"
+
+text$ = "f0_mean,'f0_mean'"
 appendInfoLine: text$
-text$ = "f0_max,'f0_max:3'"
+
+text$ = "f0_pct5,'f0_pct5'"
 appendInfoLine: text$
-text$ = "f0_mean,'f0_mean:3'"
+
+text$ = "f0_pct95,'f0_pct95'"
 appendInfoLine: text$
-text$ = "f0_std,'f0_std:3'"
+
+text$ = "int_mean,'int_mean'"
 appendInfoLine: text$
-text$ = "f0_mas,'f0_mas:3'"
+
+text$ = "jitter,'jitter'"
 appendInfoLine: text$
-text$ = "f0_min_time,'f0_min_time:3'"
+
+text$ = "shimmer,'shimmer'"
 appendInfoLine: text$
-text$ = "f0_max_time,'f0_max_time:3'"
-appendInfoLine: text$
-text$ = "f0_pct1,'f0_pct1:3'"
-appendInfoLine: text$
-text$ = "f0_pct99,'f0_pct99:3'"
-appendInfoLine: text$
-text$ = "f0_q1,'f0_q1:3'"
-appendInfoLine: text$
-text$ = "f0_q2,'f0_q2:3'"
-appendInfoLine: text$
-text$ = "f0_q3,'f0_q3:3'"
-appendInfoLine: text$
-text$ = "vcd2tot_frames,'vcd2tot_frames:3'"
-appendInfoLine: text$
-text$ = "int_min,'int_min:3'"
-appendInfoLine: text$
-text$ = "int_max,'int_max:3'"
-appendInfoLine: text$
-text$ = "int_mean,'int_mean:3'"
-appendInfoLine: text$
-text$ = "int_std,'int_std:3'"
-appendInfoLine: text$
-text$ = "int_min_time,'int_min_time:3'"
-appendInfoLine: text$
-text$ = "int_max_time,'int_max_time:3'"
-appendInfoLine: text$
-text$ = "int_pct1,'int_pct1:3'"
-appendInfoLine: text$
-text$ = "int_pct99,'int_pct99:3'"
-appendInfoLine: text$
-text$ = "int_q1,'int_q1:3'"
-appendInfoLine: text$
-text$ = "int_q2,'int_q2:3'"
-appendInfoLine: text$
-text$ = "int_q3,'int_q3:3'"
-appendInfoLine: text$
-text$ = "jitter,'jitter:6'"
-appendInfoLine: text$
-text$ = "shimmer,'shimmer:6'"
-appendInfoLine: text$
-text$ = "nhr,'nhr:6'"
+
+text$ = "nhr,'nhr'"
 appendInfoLine: text$

@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline.step.asr.alignment;
+package org.brooklynspeech.pipeline_old.step.asr.alignment;
 
 public class Word {
 
