@@ -15,7 +15,9 @@ public class Features {
         "pitch_mean", "pitch_range", "intensity_mean", "jitter", "shimmer", "nhr", "rate"
     };
 
-    private final Map<String, Double> featureDict = new HashMap<>();
+    private final Map<String, Double> rawFeatures = new HashMap<>();
+    private final Map<String, Double> normFeatures = new HashMap<>();
+
     private final Context context;
     private final Speaker speaker;
     private final String transcript;
@@ -37,11 +39,19 @@ public class Features {
     }
 
     public Double getFeature(String key) {
-        return this.featureDict.get(key);
+        return this.rawFeatures.get(key);
     }
 
     public void setFeature(String key, double value) {
-        this.featureDict.put(key, value);
+        this.rawFeatures.put(key, value);
+    }
+
+    public Double getNormalizedFeature(String key) {
+        return this.normFeatures.get(key);
+    }
+
+    public void setNormalizedFeature(String key, double value) {
+        this.normFeatures.put(key, value);
     }
 
     public Context getContext() {

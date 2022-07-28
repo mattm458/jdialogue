@@ -1,13 +1,13 @@
 package org.brooklynspeech.pipeline;
 
-import org.brooklynspeech.pipeline.entrainment.EntrainmentStrategy;
 import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.entrainment.MatchingEntrainmentStrategyProcessor;
 
 public class EntrainerProcessor extends Processor<Features, Features> {
 
-    private final EntrainmentStrategy strategy;
+    private final MatchingEntrainmentStrategyProcessor strategy;
 
-    public EntrainerProcessor(EntrainmentStrategy strategy) {
+    public EntrainerProcessor(MatchingEntrainmentStrategyProcessor strategy) {
         this.strategy = strategy;
     }
 

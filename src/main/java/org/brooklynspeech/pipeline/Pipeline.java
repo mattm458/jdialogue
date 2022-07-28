@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import org.brooklynspeech.pipeline.data.Context;
 
 public class Pipeline {
 
@@ -67,6 +68,13 @@ public class Pipeline {
             return builder;
         }
 
+        public static Builder withDummyTextSource(Context context) {
+            Builder builder = new Builder();
+            builder.setSource(new DummyTextSource(context));
+
+            return builder;
+        }
+
         public Builder setSource(Source source) {
             this.source = source;
 
@@ -79,7 +87,7 @@ public class Pipeline {
             } else {
                 p.setInQueue(this.processors.get(processors.size() - 1).getOutQueue());
             }
-            
+
             processors.add(p);
 
             return this;

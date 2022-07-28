@@ -70,6 +70,7 @@ public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
 
     @Override
     public Features doProcess(Features features) {
+        System.out.println(features.getTranscript());
         List<double[]> embeddingsList = EmbeddingFeatureProcessor.getEmbeddings(features.getTranscript());
         features.setEmbeddings(embeddingsList);
 
