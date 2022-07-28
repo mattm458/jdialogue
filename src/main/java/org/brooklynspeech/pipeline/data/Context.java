@@ -3,6 +3,7 @@ package org.brooklynspeech.pipeline.data;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Context {
 
@@ -45,12 +46,20 @@ public class Context {
         return this.partnerFeatures.iterator();
     }
 
-    public void setPartnerMean(String key, double value) {
-        this.partnerMean.put(key, value);
+    public List<Features> getPartnerFeatures() {
+        return this.partnerFeatures;
     }
 
     public double getPartnerMean(String key) {
         return this.partnerMean.get(key);
+    }
+
+    public void setPartnerMean(String key, double value) {
+        this.partnerMean.put(key, value);
+    }
+
+    public double getPartnerStd(String key) {
+        return this.partnerStd.get(key);
     }
 
     public void setPartnerStd(String key, double value) {
