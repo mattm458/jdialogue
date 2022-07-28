@@ -13,18 +13,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import org.pytorch.Tensor;
 
 public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
 
     private static HashMap<String, double[]> embeddings = null;
     private static double[] zeros;
 
-    public EmbeddingProcessor() throws FileNotFoundException, IOException {
+    private final int embeddingDim;
+
+    public EmbeddingProcessor(String embeddingPath, int embeddingDim) throws FileNotFoundException, IOException {
+        this.embeddingDim = embeddingDim;
+
         if (EmbeddingProcessor.embeddings == null) {
             EmbeddingProcessor.embeddings = new HashMap<>();
-            EmbeddingProcessor.zeros = new double[300];
+            EmbeddingProcessor.zeros = new double[embeddingDim];
 
-            File file = new File("/home/mmcneil/datasets/glove.6B.300d.txt");
+            File file = new File(embeddingPath);
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
 
@@ -64,7 +69,10 @@ public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
         }
 
         double[] embeddingsFlattened = embeddingsList.stream().flatMapToDouble(Arrays::stream).toArray();
-        chunk.setEmbeddings(embeddingsFlattened, embeddingsList.size());
+        chunk.setEmbeddings(Tensor.fromBlob(
+                embeddingsFlattened,
+                new long[]{1, embeddingsList.size(), this.embeddingDim}
+        ));
 
         return chunk;
     }
