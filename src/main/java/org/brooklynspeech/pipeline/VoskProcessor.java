@@ -28,7 +28,8 @@ public class VoskProcessor extends Processor<AudioPacket, Chunk> {
             String model,
             int sampleRate,
             AudioFormat format,
-            int conversationId
+            int conversationId,
+            Context context
     ) throws IOException {
         super();
 
@@ -38,7 +39,7 @@ public class VoskProcessor extends Processor<AudioPacket, Chunk> {
 
         this.format = format;
         this.objectMapper = new ObjectMapper();
-        this.context = new Context();
+        this.context = context;
 
         this.buffer = new ArraySink(1024);
 
@@ -64,7 +65,7 @@ public class VoskProcessor extends Processor<AudioPacket, Chunk> {
             if (t.result.isEmpty()) {
                 return null;
             }
-            
+
             System.out.println(t.text);
 
             float start = t.result.get(0).start;
