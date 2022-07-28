@@ -11,6 +11,7 @@ public class Context {
 
     private final LinkedList<Features> features = new LinkedList<>();
     private final LinkedList<Features> partnerFeatures = new LinkedList<>();
+    private final LinkedList<Features> usFeatures = new LinkedList<>();
 
     private final HashMap<String, Double> usMean = new HashMap<>();
     private final HashMap<String, Double> usStd = new HashMap<>();
@@ -31,6 +32,8 @@ public class Context {
 
         if (f.getSpeaker() == Features.Speaker.partner) {
             this.partnerFeatures.add(f);
+        } else {
+            this.usFeatures.add(f);
         }
     }
 
