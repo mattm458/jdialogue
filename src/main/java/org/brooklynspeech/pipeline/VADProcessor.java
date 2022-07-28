@@ -3,16 +3,17 @@ package org.brooklynspeech.pipeline;
 import com.orctom.vad4j.VAD;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
-import org.brooklynspeech.pipeline_old.message.Chunk;
+import org.brooklynspeech.pipeline.data.Features;
 
-public class VADProcessor extends Processor<Chunk, Chunk> {
+public class VADProcessor extends Processor<Features, Features> {
 
     private final VAD vad = new VAD();
     private static final int SIZE = 1024 * 4;
 
     @Override
-    public Chunk doProcess(Chunk chunk) {
-        byte[] wavData = chunk.getWavData();
+    public Features doProcess(Features features) {
+        byte[] wavData = features.getWavData();
+
         ByteArrayInputStream stream = new ByteArrayInputStream(wavData);
 
         byte[] bytes = new byte[SIZE];
@@ -37,10 +38,10 @@ public class VADProcessor extends Processor<Chunk, Chunk> {
         if (start > 0) {
 
             byte[] trimmed = Arrays.copyOfRange(wavData, start, wavData.length);
-            chunk.setWavData(trimmed);
+            features.setWavData(trimmed);
         }
 
-        return chunk;
+        return features;
     }
 
 }

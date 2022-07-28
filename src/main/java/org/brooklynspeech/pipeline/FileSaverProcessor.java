@@ -8,9 +8,9 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import org.brooklynspeech.pipeline_old.message.Chunk;
+import org.brooklynspeech.pipeline.data.Features;
 
-public class FileSaverProcessor extends Processor<Chunk, Chunk> {
+public class FileSaverProcessor extends Processor<Features, Features> {
 
     private final AudioFormat format;
 
@@ -19,13 +19,13 @@ public class FileSaverProcessor extends Processor<Chunk, Chunk> {
     }
 
     @Override
-    public Chunk doProcess(Chunk chunk) {
+    public Features doProcess(Features features) {
         Path wavPath;
 
-        byte[] wavData = chunk.getWavData();
+        byte[] wavData = features.getWavData();
 
         try {
-            wavPath = Files.createTempFile("dialogue_" + chunk.getConversationId() + "_", ".wav");
+            wavPath = Files.createTempFile("dialogue_" + features.getContext().getConversationId() + "_", ".wav");
             System.out.println(wavPath);
         } catch (IOException e) {
             e.printStackTrace(System.out);
@@ -33,7 +33,7 @@ public class FileSaverProcessor extends Processor<Chunk, Chunk> {
             return null;
         }
 
-        chunk.setWavPath(wavPath);
+        features.setWavPath(wavPath.toString());
 
         ByteArrayInputStream byteStream = new ByteArrayInputStream(wavData);
         AudioInputStream audioStream = new AudioInputStream(byteStream, this.format, wavData.length);
@@ -46,7 +46,7 @@ public class FileSaverProcessor extends Processor<Chunk, Chunk> {
             return null;
         }
 
-        return chunk;
+        return features;
     }
 
 }

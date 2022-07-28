@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline_old.step.asr.alignment;
+package org.brooklynspeech.pipeline.data;
 
 import java.util.ArrayList;
 import java.util.List;

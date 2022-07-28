@@ -3,16 +3,15 @@ package org.brooklynspeech.pipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
 import javax.sound.sampled.AudioFormat;
 import org.brooklynspeech.audio.sink.ArraySink;
-import org.brooklynspeech.pipeline_old.message.Chunk;
-import org.brooklynspeech.pipeline_old.message.Context;
-import org.brooklynspeech.pipeline_old.step.asr.alignment.Transcript;
+import org.brooklynspeech.pipeline.data.Context;
+import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Transcript;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
-public class VoskProcessor extends Processor<AudioPacket, Chunk> {
+public class VoskProcessor extends Processor<AudioPacket, Features> {
 
     private final Recognizer recognizer;
     private final AudioFormat format;
@@ -47,7 +46,7 @@ public class VoskProcessor extends Processor<AudioPacket, Chunk> {
     }
 
     @Override
-    public Chunk doProcess(AudioPacket input) {
+    public Features doProcess(AudioPacket input) {
         this.buffer.write(input.bytes, input.len);
 
         if (this.recognizer.acceptWaveForm(input.bytes, input.len)) {
@@ -74,7 +73,8 @@ public class VoskProcessor extends Processor<AudioPacket, Chunk> {
             int endIdx = (int) (end * this.format.getSampleRate() * this.format.getSampleSizeInBits() / 8);
 
             final byte[] wavData = buffer.range(startIdx, endIdx);
-            return new Chunk(this.context, t, wavData, this.conversationId);
+
+            return new Features(this.context, Features.Speaker.partner, t.text, wavData);
         }
 
         return null;

@@ -4,19 +4,18 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 import java.io.StringReader;
-import org.brooklynspeech.pipeline_old.message.Chunk;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import org.pytorch.Tensor;
+import org.brooklynspeech.pipeline.Processor;
+import org.brooklynspeech.pipeline.data.Features;
 
-public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
+public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
 
     private static HashMap<String, double[]> embeddings = null;
     private static double[] zeros;
@@ -38,18 +37,18 @@ public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
             CoreLabel label = ptbt.next();
             String value = label.value();
 
-            double[] emb = EmbeddingProcessor.embeddings.getOrDefault(value, EmbeddingProcessor.zeros);
+            double[] emb = EmbeddingFeatureProcessor.embeddings.getOrDefault(value, EmbeddingFeatureProcessor.zeros);
             embeddingsList.add(emb);
         }
 
         return embeddingsList;
     }
 
-    public EmbeddingProcessor(String embeddingPath, int embeddingDim) throws FileNotFoundException, IOException {
-        if (EmbeddingProcessor.embeddings == null) {
-            EmbeddingProcessor.embeddings = new HashMap<>();
-            EmbeddingProcessor.zeros = new double[embeddingDim];
-            EmbeddingProcessor.embeddingDim = embeddingDim;
+    public EmbeddingFeatureProcessor(String embeddingPath, int embeddingDim) throws FileNotFoundException, IOException {
+        if (EmbeddingFeatureProcessor.embeddings == null) {
+            EmbeddingFeatureProcessor.embeddings = new HashMap<>();
+            EmbeddingFeatureProcessor.zeros = new double[embeddingDim];
+            EmbeddingFeatureProcessor.embeddingDim = embeddingDim;
 
             File file = new File(embeddingPath);
             FileReader fr = new FileReader(file);
@@ -64,30 +63,16 @@ public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
                 for (int i = 1; i < lineData.length; i++) {
                     emb[i - 1] = Double.parseDouble(lineData[i]);
                 }
-                EmbeddingProcessor.embeddings.put(key, emb);
+                EmbeddingFeatureProcessor.embeddings.put(key, emb);
             }
         }
     }
 
     @Override
-    public Chunk doProcess(Chunk chunk) {
-        List<double[]> embeddingsList = EmbeddingProcessor.getEmbeddings(chunk.getTranscript().text);
+    public Features doProcess(Features features) {
+        List<double[]> embeddingsList = EmbeddingFeatureProcessor.getEmbeddings(features.getTranscript());
+        features.setEmbeddings(embeddingsList);
 
-        double[] embeddingsFlattened = embeddingsList.stream().flatMapToDouble(Arrays::stream).toArray();
-        float[] floatEmbeddings = new float[embeddingsFlattened.length];
-
-        for (int i = 0; i < embeddingsFlattened.length; i++) {
-            floatEmbeddings[i] = (float) embeddingsFlattened[i];
-        }
-
-        chunk.setEmbeddings(
-                Tensor.fromBlob(
-                        floatEmbeddings,
-                        new long[]{1, embeddingsList.size(), EmbeddingProcessor.embeddingDim}
-                ),
-                embeddingsList.size()
-        );
-
-        return chunk;
+        return features;
     }
 }

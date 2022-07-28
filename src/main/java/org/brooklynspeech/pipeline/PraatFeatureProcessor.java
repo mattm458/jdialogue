@@ -3,18 +3,15 @@ package org.brooklynspeech.pipeline;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.util.HashMap;
-import org.brooklynspeech.pipeline_old.message.Chunk;
-import org.brooklynspeech.pipeline_old.message.Feature;
+import org.brooklynspeech.pipeline.data.Features;
 
-public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
+public class PraatFeatureProcessor extends Processor<Features, Features> {
 
     @Override
-    public Chunk doProcess(Chunk chunk) {
-        final Path wavPath = chunk.getWavPath();
+    public Features doProcess(Features features) {
+        final String wavPath = features.getWavPath();
 
-        final ProcessBuilder pb = new ProcessBuilder("praat", "--run", "extract_features.praat", wavPath.toString());
+        final ProcessBuilder pb = new ProcessBuilder("praat", "--run", "extract_features.praat", wavPath);
         final Process p;
 
         try {
@@ -28,11 +25,8 @@ public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
         final BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
         String line;
-        HashMap<String, Float> featuresMap;
 
         try {
-            featuresMap = new HashMap<>();
-
             while ((line = input.readLine()) != null) {
                 String[] lineData = line.split(",");
                 String featureName = lineData[0];
@@ -45,7 +39,7 @@ public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
                     return null;
                 }
 
-                featuresMap.put(featureName, featureValue);
+                features.setFeature(featureName, featureValue);
             }
         } catch (IOException e) {
             e.printStackTrace(System.out);
@@ -53,21 +47,11 @@ public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
             return null;
         }
 
-        Feature features = new Feature();
+        features.setFeature(
+                "rate",
+                features.getFeature("duration") / (features.getTranscript().chars().filter(c -> c == (int) ' ').count() + 1)
+        );
 
-        features.duration = featuresMap.get("dur");
-        features.pitchMean = featuresMap.get("f0_mean");
-        features.pitchPct5 = featuresMap.get("f0_pct5");
-        features.pitchPct95 = featuresMap.get("f0_pct95");
-        features.intensityMean = featuresMap.get("int_mean");
-        features.jitter = featuresMap.get("jitter");
-        features.shimmer = featuresMap.get("shimmer");
-        features.nhr = featuresMap.get("nhr");
-
-        features.pitchRange = features.pitchPct95 - features.pitchPct5;
-        features.rate = chunk.getTranscript().result.size() / features.duration;
-
-        chunk.setFeatures(features);
-        return chunk;
+        return features;
     }
 }

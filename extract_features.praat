@@ -90,23 +90,22 @@ else
     shimmer = Get shimmer (local)... 0 0 0.0001 0.02 1.3 1.6
 endif
 
+f0_range = f0_pct95 - f0_pct5
+
 ##########
 # Output #
 ##########
 
-text$ = "dur,'dur'"
+text$ = "duration,'dur'"
 appendInfoLine: text$
 
-text$ = "f0_mean,'f0_mean'"
+text$ = "pitch_mean,'f0_mean'"
 appendInfoLine: text$
 
-text$ = "f0_pct5,'f0_pct5'"
+text$ = "pitch_range,'f0_range'"
 appendInfoLine: text$
 
-text$ = "f0_pct95,'f0_pct95'"
-appendInfoLine: text$
-
-text$ = "int_mean,'int_mean'"
+text$ = "intensity_mean,'int_mean'"
 appendInfoLine: text$
 
 text$ = "jitter,'jitter'"
