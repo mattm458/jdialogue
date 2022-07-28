@@ -8,10 +8,6 @@ import org.brooklynspeech.pipeline_old.message.Chunk;
 
 public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
 
-    public EmbeddingProcessor() {
-
-    }
-
     @Override
     public Chunk doProcess(Chunk chunk) {
         // Documentation for the arguments below:
