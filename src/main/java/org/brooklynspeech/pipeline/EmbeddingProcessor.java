@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import org.pytorch.Tensor;
 
 public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
@@ -20,14 +21,35 @@ public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
     private static HashMap<String, double[]> embeddings = null;
     private static double[] zeros;
 
-    private final int embeddingDim;
+    private static int embeddingDim;
+
+    public static List<double[]> getEmbeddings(String text) {
+        // Documentation for the arguments below:
+        // https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
+        PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(
+                new StringReader(text),
+                new CoreLabelTokenFactory(),
+                "ptb3Escaping=false,splitAssimilations=false"
+        );
+
+        LinkedList<double[]> embeddingsList = new LinkedList<>();
+
+        while (ptbt.hasNext()) {
+            CoreLabel label = ptbt.next();
+            String value = label.value();
+
+            double[] emb = EmbeddingProcessor.embeddings.getOrDefault(value, EmbeddingProcessor.zeros);
+            embeddingsList.add(emb);
+        }
+
+        return embeddingsList;
+    }
 
     public EmbeddingProcessor(String embeddingPath, int embeddingDim) throws FileNotFoundException, IOException {
-        this.embeddingDim = embeddingDim;
-
         if (EmbeddingProcessor.embeddings == null) {
             EmbeddingProcessor.embeddings = new HashMap<>();
             EmbeddingProcessor.zeros = new double[embeddingDim];
+            EmbeddingProcessor.embeddingDim = embeddingDim;
 
             File file = new File(embeddingPath);
             FileReader fr = new FileReader(file);
@@ -49,30 +71,22 @@ public class EmbeddingProcessor extends Processor<Chunk, Chunk> {
 
     @Override
     public Chunk doProcess(Chunk chunk) {
-        // Documentation for the arguments below:
-        // https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
-        PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(
-                new StringReader(chunk.getTranscript().text),
-                new CoreLabelTokenFactory(),
-                "ptb3Escaping=false,splitAssimilations=false"
-        );
-
-        LinkedList<double[]> embeddingsList = new LinkedList<>();
-
-        while (ptbt.hasNext()) {
-            CoreLabel label = ptbt.next();
-            String value = label.value();
-
-            double[] emb = EmbeddingProcessor.embeddings.getOrDefault(value, EmbeddingProcessor.zeros);
-            embeddingsList.add(emb);
-
-        }
+        List<double[]> embeddingsList = EmbeddingProcessor.getEmbeddings(chunk.getTranscript().text);
 
         double[] embeddingsFlattened = embeddingsList.stream().flatMapToDouble(Arrays::stream).toArray();
-        chunk.setEmbeddings(Tensor.fromBlob(
-                embeddingsFlattened,
-                new long[]{1, embeddingsList.size(), this.embeddingDim}
-        ));
+        float[] floatEmbeddings = new float[embeddingsFlattened.length];
+
+        for (int i = 0; i < embeddingsFlattened.length; i++) {
+            floatEmbeddings[i] = (float) embeddingsFlattened[i];
+        }
+
+        chunk.setEmbeddings(
+                Tensor.fromBlob(
+                        floatEmbeddings,
+                        new long[]{1, embeddingsList.size(), EmbeddingProcessor.embeddingDim}
+                ),
+                embeddingsList.size()
+        );
 
         return chunk;
     }

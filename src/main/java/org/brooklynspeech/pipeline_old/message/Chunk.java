@@ -16,6 +16,7 @@ public class Chunk {
     private Feature features;
 
     private Tensor embeddings;
+    private int embeddingsLength;
     private final IValue speaker = IValue.from(Tensor.fromBlob(new double[]{1.0, 0.0}, new long[]{1, 2}));
 
     public Chunk(Context context, Transcript transcript, byte[] wavData, int conversationId) {
@@ -65,11 +66,19 @@ public class Chunk {
         return this.speaker;
     }
 
-    public void setEmbeddings(Tensor embeddings) {
+    public void setEmbeddings(Tensor embeddings, int embeddingsLength) {
+        this.embeddingsLength = embeddingsLength;
         this.embeddings = embeddings;
     }
 
     public IValue getEmbeddings() {
         return IValue.from(this.embeddings);
+    }
+
+    public IValue getEmbeddingsLength() {
+        return IValue.from(Tensor.fromBlob(
+                new long[]{this.embeddingsLength},
+                new long[]{1}
+        ));
     }
 }
