@@ -2,6 +2,8 @@ package org.brooklynspeech.pipeline_old.message;
 
 import java.nio.file.Path;
 import org.brooklynspeech.pipeline_old.step.asr.alignment.Transcript;
+import org.pytorch.IValue;
+import org.pytorch.Tensor;
 
 public class Chunk {
 
@@ -12,6 +14,11 @@ public class Chunk {
     private byte[] wavData;
     private Path wavPath = null;
     private Feature features;
+
+    private double[] embeddings;
+    private int embeddingsLength;
+
+    private final IValue speaker = IValue.from(Tensor.fromBlob(new double[]{1.0, 0.0}, new long[]{1, 2}));
 
     public Chunk(Context context, Transcript transcript, byte[] wavData, int conversationId) {
         this.context = context;
@@ -54,5 +61,21 @@ public class Chunk {
 
     public void setFeatures(Feature features) {
         this.features = features;
+    }
+
+    public IValue getSpeaker() {
+        return this.speaker;
+    }
+
+    public void setEmbeddings(double[] embeddings, int embeddingsLength) {
+        this.embeddings = embeddings;
+        this.embeddingsLength = embeddingsLength;
+    }
+
+    public IValue getEmbeddings() {
+        return IValue.from(Tensor.fromBlob(
+                this.embeddings,
+                new long[]{1, this.embeddingsLength, 300}
+        ));
     }
 }
