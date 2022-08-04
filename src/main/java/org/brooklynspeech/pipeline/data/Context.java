@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.pytorch.IValue;
+
 public class Context {
 
     private final int conversationId;
@@ -18,6 +20,8 @@ public class Context {
     private final HashMap<String, Double> usStd = new HashMap<>();
     private final HashMap<String, Double> partnerMean = new HashMap<>();
     private final HashMap<String, Double> partnerStd = new HashMap<>();
+
+    private final HashMap<String, IValue> torchFeatures = new HashMap<>();
 
     public Context(int conversationId, int maxLength) {
         this.conversationId = conversationId;
@@ -64,5 +68,13 @@ public class Context {
 
     public void setPartnerStd(String key, double value) {
         this.partnerStd.put(key, value);
+    }
+
+    public IValue getTorchFeature(String key) {
+        return this.torchFeatures.get(key);
+    }
+
+    public void setTorchFeature(String key, IValue value) {
+        this.torchFeatures.put(key, value);
     }
 }
