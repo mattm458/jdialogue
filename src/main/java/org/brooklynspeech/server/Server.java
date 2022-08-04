@@ -44,13 +44,11 @@ public class Server {
                                 .withDummyTextSource(context)
                                 .addProcessor(new EmbeddingFeatureProcessor("glove.6B.300d.txt", 300))
                                 .addProcessor(new ContextCommitProcessor())
-                                // .addProcessor(new NeuralEntrainmentStrategyProcessor())
                                 .build();
 
                 this.userPipeline = Pipeline.Builder
                                 .withAudioFileSource("wav/GAME_speakerB.wav", 1024)
-                                .addProcessor(new VoskProcessor("vosk-model-small-en-us-0.15", 16000, FORMAT, 0,
-                                                context))
+                                .addProcessor(new VoskProcessor("vosk-model-small-en-us-0.15", FORMAT, context))
                                 .addProcessor(new VADProcessor())
                                 .addProcessor(new FileSaverProcessor(FORMAT))
                                 .addProcessor(new PraatFeatureProcessor())

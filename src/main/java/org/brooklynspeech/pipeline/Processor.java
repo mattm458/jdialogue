@@ -23,8 +23,12 @@ public abstract class Processor<InType, OutType> {
         this.inQueue = inQueue;
     }
 
+    protected void setup() {}
+
     public final void start() {
         this.running = true;
+
+        this.setup();
 
         while (this.running) {
             InType input;

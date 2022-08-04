@@ -25,14 +25,7 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
 
     private final ArraySink buffer;
 
-    private final int conversationId;
-
-    public VoskProcessor(
-            String model,
-            int sampleRate,
-            AudioFormat format,
-            int conversationId,
-            Context context) throws IOException {
+    public VoskProcessor(String model, AudioFormat format, Context context) throws IOException {
         super();
 
         this.model = model;
@@ -41,16 +34,14 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
         this.context = context;
 
         this.buffer = new ArraySink(1024);
-
-        this.conversationId = conversationId;
     }
 
     @Override
-    public void start() {
-        // Set up the Vosk recognizer
+    protected void setup() {
         try {
             Recognizer recognizer = new Recognizer(new Model(this.model), (int) this.format.getSampleRate());
             recognizer.setWords(true); // Causes Vosk to return word alignments
+
             this.recognizer.set(recognizer);
         } catch (Exception e) {
             e.printStackTrace(System.out);
@@ -58,7 +49,7 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
             return;
         }
 
-        super.start();
+        super.setup();
     }
 
     @Override
