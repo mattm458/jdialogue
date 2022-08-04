@@ -3,7 +3,7 @@ package org.brooklynspeech.pipeline;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class Processor<InType, OutType> {
+public abstract class Processor<InType, OutType> extends Thread {
 
     protected BlockingQueue<InType> inQueue = null;
     protected BlockingQueue<OutType> outQueue = null;
@@ -23,35 +23,31 @@ public abstract class Processor<InType, OutType> {
         this.inQueue = inQueue;
     }
 
-    protected void setup() {}
+    protected void setup() {
+    }
 
-    public final void start() {
-        this.running = true;
-
+    @Override
+    public final void run() {
         this.setup();
 
-        while (this.running) {
+        while (!Thread.currentThread().isInterrupted()) {
             InType input;
 
             try {
                 input = this.inQueue.take();
             } catch (InterruptedException e) {
                 e.printStackTrace(System.out);
-                this.running = false;
-                return;
+                continue;
             }
 
             OutType output = doProcess(input);
+
             if (output == null) {
                 continue;
             }
 
             outQueue.add(output);
         }
-    }
-
-    public void stop() {
-        this.running = false;
     }
 
     public abstract OutType doProcess(InType input);
