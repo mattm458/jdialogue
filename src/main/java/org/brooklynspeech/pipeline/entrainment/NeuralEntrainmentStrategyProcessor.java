@@ -65,9 +65,7 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
             final IValue h = IValue.from(Tensor.fromBlob(new float[hiddenSize], new long[] { batchSize, hiddenSize }));
             final IValue c = IValue.from(Tensor.fromBlob(new float[hiddenSize], new long[] { batchSize, hiddenSize }));
 
-            final IValue tuple = IValue.tupleFrom(h, c);
-
-            hidden[i] = tuple;
+            hidden[i] = IValue.tupleFrom(h, c);
         }
 
         return IValue.listFrom(hidden);
