@@ -26,7 +26,6 @@ public class FileSaverProcessor extends Processor<Features, Features> {
 
         try {
             wavPath = Files.createTempFile("dialogue_" + features.getContext().getConversationId() + "_", ".wav");
-            System.out.println(wavPath);
         } catch (IOException e) {
             e.printStackTrace(System.out);
             System.exit(1);

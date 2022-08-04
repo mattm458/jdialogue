@@ -1,6 +1,5 @@
 package org.brooklynspeech.pipeline.data;
 
-import org.brooklynspeech.pipeline.data.Context;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
