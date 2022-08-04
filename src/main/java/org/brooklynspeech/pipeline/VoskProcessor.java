@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.audio.sink.ArraySink;
+import org.brooklynspeech.pipeline.component.Processor;
 import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
 import org.brooklynspeech.pipeline.data.Transcript;
@@ -26,8 +27,6 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
     private final ArraySink buffer;
 
     public VoskProcessor(String model, AudioFormat format, Context context) throws IOException {
-        super();
-
         this.model = model;
         this.format = format;
         this.objectMapper = new ObjectMapper();

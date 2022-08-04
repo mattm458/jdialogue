@@ -1,9 +1,12 @@
 package org.brooklynspeech.pipeline;
 
-import com.orctom.vad4j.VAD;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+
+import org.brooklynspeech.pipeline.component.Processor;
 import org.brooklynspeech.pipeline.data.Features;
+
+import com.orctom.vad4j.VAD;
 
 public class VADProcessor extends Processor<Features, Features> {
 

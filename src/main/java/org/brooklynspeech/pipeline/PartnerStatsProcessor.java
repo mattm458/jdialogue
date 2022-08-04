@@ -2,6 +2,8 @@ package org.brooklynspeech.pipeline;
 
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.brooklynspeech.pipeline.component.Processor;
 import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
 
@@ -31,7 +33,7 @@ public class PartnerStatsProcessor extends Processor<Features, Features> {
             context.setPartnerMean(featureKey, sums.get(featureKey) / count);
         }
 
-        // Compute standard deviation    
+        // Compute standard deviation
         HashMap<String, Double> diffs = new HashMap<>();
         iterator = context.getPartnerFeaturesIterator();
         while (iterator.hasNext()) {

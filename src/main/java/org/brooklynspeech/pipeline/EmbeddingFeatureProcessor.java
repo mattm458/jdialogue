@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.brooklynspeech.pipeline.component.Processor;
 import org.brooklynspeech.pipeline.data.Features;
 
 import edu.stanford.nlp.ling.CoreLabel;
@@ -21,7 +22,7 @@ public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
     private static HashMap<String, double[]> embeddings = null;
     private static double[] zeros;
 
-    private static int embeddingDim;
+    // private static int embeddingDim;
 
     public static List<double[]> getEmbeddings(String text) {
         // Documentation for the arguments below:
@@ -29,8 +30,7 @@ public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
         PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(
                 new StringReader(text),
                 new CoreLabelTokenFactory(),
-                "ptb3Escaping=false,splitAssimilations=false"
-        );
+                "ptb3Escaping=false,splitAssimilations=false");
 
         LinkedList<double[]> embeddingsList = new LinkedList<>();
 
@@ -49,7 +49,7 @@ public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
         if (EmbeddingFeatureProcessor.embeddings == null) {
             EmbeddingFeatureProcessor.embeddings = new HashMap<>();
             EmbeddingFeatureProcessor.zeros = new double[embeddingDim];
-            EmbeddingFeatureProcessor.embeddingDim = embeddingDim;
+            // EmbeddingFeatureProcessor.embeddingDim = embeddingDim;
 
             File file = new File(embeddingPath);
             FileReader fr = new FileReader(file);

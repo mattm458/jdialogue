@@ -1,13 +1,9 @@
 package org.brooklynspeech.pipeline;
 
+import org.brooklynspeech.pipeline.component.Processor;
 import org.brooklynspeech.pipeline.data.Features;
 
 public class DummyTTSProcessor extends Processor<Features, Features> {
-
-    //private final Voice voice;
-
-    public DummyTTSProcessor() {
-    }
 
     @Override
     public Features doProcess(Features input) {

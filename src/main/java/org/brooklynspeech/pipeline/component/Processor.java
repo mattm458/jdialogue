@@ -1,29 +1,20 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.component;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class Processor<InType, OutType> extends Thread {
+public abstract class Processor<InType, OutType> extends Unit<OutType> {
 
     protected BlockingQueue<InType> inQueue = null;
-    protected BlockingQueue<OutType> outQueue = null;
-
-    protected boolean running;
-
-    public Processor() {
-        this.running = false;
-        this.outQueue = new LinkedBlockingQueue<>();
-    }
-
-    public BlockingQueue<OutType> getOutQueue() {
-        return outQueue;
-    }
-
-    public void setInQueue(BlockingQueue<InType> inQueue) {
-        this.inQueue = inQueue;
-    }
 
     protected void setup() {
+    }
+
+    public void setInQueue(BlockingQueue<InType> inQueue) throws Exception {
+        if (this.inQueue != null) {
+            throw new Exception("Processor already has an input queue and cannot be reused!");
+        }
+
+        this.inQueue = inQueue;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.brooklynspeech.pipeline.source;
 
 import java.time.Instant;
+
+import org.brooklynspeech.pipeline.component.Source;
 import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
 

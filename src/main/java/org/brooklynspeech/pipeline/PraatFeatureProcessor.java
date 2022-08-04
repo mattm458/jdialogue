@@ -3,6 +3,8 @@ package org.brooklynspeech.pipeline;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import org.brooklynspeech.pipeline.component.Processor;
 import org.brooklynspeech.pipeline.data.Features;
 
 public class PraatFeatureProcessor extends Processor<Features, Features> {
@@ -49,8 +51,8 @@ public class PraatFeatureProcessor extends Processor<Features, Features> {
 
         features.setFeature(
                 "rate",
-                features.getFeature("duration") / (features.getTranscript().chars().filter(c -> c == (int) ' ').count() + 1)
-        );
+                features.getFeature("duration")
+                        / (features.getTranscript().chars().filter(c -> c == (int) ' ').count() + 1));
 
         return features;
     }
