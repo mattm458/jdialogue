@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.source;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -8,6 +8,7 @@ public abstract class Source<OutType> extends Thread {
     protected final LinkedBlockingQueue<OutType> outQueue;
 
     public Source() {
+        super();
         this.outQueue = new LinkedBlockingQueue<>();
     }
 

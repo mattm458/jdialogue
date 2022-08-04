@@ -1,7 +1,9 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.source;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+
+import org.brooklynspeech.pipeline.Pipeline;
 
 public class MergeSource<T> extends Source<T> {
     protected ArrayList<BlockingQueue<T>> inQueues = new ArrayList<>();

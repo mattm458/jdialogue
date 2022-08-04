@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.source;
 
 import java.time.Instant;
 import org.brooklynspeech.pipeline.data.Context;
