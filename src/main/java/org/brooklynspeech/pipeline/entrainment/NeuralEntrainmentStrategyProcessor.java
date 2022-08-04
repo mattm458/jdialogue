@@ -43,6 +43,21 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         this("entrainer.pt", 7, 100, 256, 256, 2, 256, 2, true, 300);
     }
 
+    private static IValue getFeatureInput(int batchSize, int featureDim) {
+        final float[] featureInput_val = new float[batchSize * featureDim];
+        return IValue.from(Tensor.fromBlob(featureInput_val, new long[] { batchSize, featureDim }));
+    }
+
+    private static IValue getFeatureHistory(int batchSize, int maxLength, int encodedDim) {
+        final float[] featureInput_val = new float[batchSize * maxLength * encodedDim];
+        return IValue.from(Tensor.fromBlob(featureInput_val, new long[] { batchSize, maxLength, encodedDim }));
+    }
+
+    private static IValue getFeatureMask(int batchSize, int maxLength) {
+        final byte[] featureMask_val = new byte[batchSize * maxLength];
+        return IValue.from(Tensor.fromBlob(featureMask_val, new long[] { batchSize, maxLength, 1 }));
+    }
+
     private static IValue getHidden(int batchSize, int numLayers, int hiddenSize) {
         IValue[] hidden = new IValue[numLayers];
 
@@ -58,6 +73,28 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         return IValue.listFrom(hidden);
     }
 
+    private static IValue getSpeaker(int batchSize) {
+        final float[] speaker_val = new float[batchSize * 2];
+        return IValue.from(Tensor.fromBlob(speaker_val, new long[] { batchSize, 2 }));
+    }
+
+    private static IValue getPredIdxs(int batchSize, int predIdxsSize) {
+        final long[] predIdxs_val = new long[predIdxsSize];
+        return IValue.from(Tensor.fromBlob(predIdxs_val, new long[] { predIdxsSize }));
+
+    }
+
+    private static IValue getEmbedding(int batchSize, int textSize, int embeddingDim) {
+        final float[] embeddingInput_val = new float[batchSize * textSize * embeddingDim];
+        return IValue.from(Tensor.fromBlob(embeddingInput_val, new long[] { batchSize, textSize, embeddingDim }));
+    }
+
+    private static IValue getEmbeddingLen(int batchSize) {
+        final int[] embeddingLen_val = new int[batchSize];
+        embeddingLen_val[0] = 10;
+        return IValue.from(Tensor.fromBlob(embeddingLen_val, new long[] { batchSize }));
+    }
+
     @Override
     public Features doProcess(Features ourFeatures) {
         final int batchSize = 1;
@@ -66,44 +103,18 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         final int predTextSize = 100;
 
         final IValue timestep = IValue.from(0);
-
-        final float[] featureInput_val = new float[batchSize * this.featureDim];
-        final IValue featureInput = IValue.from(Tensor.fromBlob(featureInput_val, new long[] { batchSize, 7 }));
-
-        final float[] featureHistory_val = new float[this.encodedDim * this.maxLength];
-        final IValue featureHistory = IValue
-                .from(Tensor.fromBlob(featureHistory_val, new long[] { batchSize,
-                        this.maxLength, this.encodedDim }));
-
-        final byte[] featureMask_val = new byte[batchSize * this.maxLength];
-        final IValue featureMask = IValue
-                .from(Tensor.fromBlob(featureMask_val, new long[] { batchSize,
-                        this.maxLength, 1 }));
-
-        final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers, this.featureEncoderHiddenDim);
+        final IValue featureInput = getFeatureInput(batchSize, this.featureDim);
+        final IValue featureHistory = getFeatureHistory(batchSize, this.maxLength, this.encodedDim);
+        final IValue featureMask = getFeatureMask(batchSize, this.maxLength);
+        final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers,
+                this.featureEncoderHiddenDim);
         final IValue decoderHidden = getHidden(batchSize, this.decoderLayers, this.decoderHiddenDim);
-
-        final float[] speaker_val = new float[batchSize * 2];
-        final IValue speaker = IValue.from(Tensor.fromBlob(speaker_val, new long[] { batchSize, 2 }));
-
-        final long[] predIdxs_val = new long[predIdxsSize];
-        final IValue predIdxs = IValue.from(Tensor.fromBlob(predIdxs_val, new long[] { predIdxsSize }));
-
-        final float[] embeddingInput_val = new float[batchSize * textSize * this.embeddingDim];
-        final IValue embeddingInput = IValue
-                .from(Tensor.fromBlob(embeddingInput_val, new long[] { batchSize, textSize, this.embeddingDim }));
-
-        final int[] embeddingLen_val = new int[batchSize];
-        embeddingLen_val[0] = 10;
-        final IValue embeddingLen = IValue.from(Tensor.fromBlob(embeddingLen_val, new long[] { batchSize }));
-
-        final float[] predEmbeddingInput_val = new float[batchSize * predTextSize * this.embeddingDim];
-        final IValue predEmbeddingInput = IValue.from(
-                Tensor.fromBlob(predEmbeddingInput_val, new long[] { batchSize, predTextSize, this.embeddingDim }));
-
-        final int[] predEmbeddingLen_val = new int[batchSize];
-        predEmbeddingLen_val[0] = 10;
-        final IValue predEmbeddingLen = IValue.from(Tensor.fromBlob(predEmbeddingLen_val, new long[] { batchSize }));
+        final IValue speaker = getSpeaker(batchSize);
+        final IValue predIdxs = getPredIdxs(batchSize, predIdxsSize);
+        final IValue embeddingInput = getEmbedding(batchSize, textSize, this.embeddingDim);
+        final IValue embeddingLen = getEmbeddingLen(batchSize);
+        final IValue predEmbeddingInput = getEmbedding(batchSize, predTextSize, this.embeddingDim);
+        final IValue predEmbeddingLen = getEmbeddingLen(batchSize);
 
         final IValue output = this.model.forward(timestep, featureInput,
                 featureHistory, featureMask,
@@ -111,7 +122,6 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
                 embeddingLen,
                 predEmbeddingInput, predEmbeddingLen);
 
-        
         IValue[] outTuple = output.toTuple();
         System.out.println(outTuple[0].toTensor().getDataAsFloatArray()[0]);
 
