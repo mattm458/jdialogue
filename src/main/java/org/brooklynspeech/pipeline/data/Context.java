@@ -10,7 +10,6 @@ import org.pytorch.IValue;
 public class Context {
 
     private final int conversationId;
-    private final int maxLength;
 
     private final LinkedList<Features> features = new LinkedList<>();
     private final LinkedList<Features> partnerFeatures = new LinkedList<>();
@@ -23,9 +22,8 @@ public class Context {
 
     private final HashMap<String, IValue> torchFeatures = new HashMap<>();
 
-    public Context(int conversationId, int maxLength) {
+    public Context(int conversationId) {
         this.conversationId = conversationId;
-        this.maxLength = maxLength;
     }
 
     public int getConversationId() {
@@ -52,6 +50,22 @@ public class Context {
 
     public List<Features> getPartnerFeatures() {
         return this.partnerFeatures;
+    }
+
+    public double getUsMean(String key) {
+        return this.usMean.get(key);
+    }
+
+    public void setUsMean(String key, double value) {
+        this.usMean.put(key, value);
+    }
+
+    public double getUsStd(String key) {
+        return this.usStd.get(key);
+    }
+
+    public void setUsStd(String key, double value) {
+        this.usStd.put(key, value);
     }
 
     public double getPartnerMean(String key) {

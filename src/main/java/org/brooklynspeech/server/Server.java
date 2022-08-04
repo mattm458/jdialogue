@@ -28,7 +28,7 @@ public class Server {
         public static final int hiddenSize = 256;
 
         public Server() throws Exception {
-                final Context context = new Context(0, Server.maxLength);
+                final Context context = new Context(0);
 
                 context.setTorchFeature("featureHistory",
                                 NeuralEntrainmentStrategyProcessor.getFeatureHistory(1, Server.maxLength,

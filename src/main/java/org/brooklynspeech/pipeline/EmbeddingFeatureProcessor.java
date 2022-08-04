@@ -1,19 +1,20 @@
 package org.brooklynspeech.pipeline;
 
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.process.CoreLabelTokenFactory;
-import edu.stanford.nlp.process.PTBTokenizer;
-import java.io.StringReader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import org.brooklynspeech.pipeline.Processor;
+
 import org.brooklynspeech.pipeline.data.Features;
+
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.PTBTokenizer;
 
 public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
 
@@ -65,6 +66,8 @@ public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
                 }
                 EmbeddingFeatureProcessor.embeddings.put(key, emb);
             }
+
+            br.close();
         }
     }
 

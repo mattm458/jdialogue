@@ -1,7 +1,7 @@
 package org.brooklynspeech.pipeline;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -17,8 +17,7 @@ public class AudioFileSource extends Source<AudioPacket> {
         this.stream = AudioSystem.getAudioInputStream(
                 AudioFileSource.class
                         .getClassLoader()
-                        .getResourceAsStream(filename)
-        );
+                        .getResourceAsStream(filename));
 
         this.packetSize = packetSize;
     }

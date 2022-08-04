@@ -10,8 +10,8 @@ public class Features {
         us, partner
     }
 
-    public static String[] featureKeys = new String[]{
-        "pitch_mean", "pitch_range", "intensity_mean", "jitter", "shimmer", "nhr", "rate"
+    public static String[] featureKeys = new String[] {
+            "pitch_mean", "pitch_range", "intensity_mean", "jitter", "shimmer", "nhr", "rate"
     };
 
     private final Map<String, Double> rawFeatures = new HashMap<>();
@@ -63,6 +63,10 @@ public class Features {
 
     public String getTranscript() {
         return this.transcript;
+    }
+
+    public List<double[]> getEmbeddings() {
+        return this.embeddings;
     }
 
     public void setEmbeddings(List<double[]> embeddings) {

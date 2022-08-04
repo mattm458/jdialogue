@@ -1,7 +1,5 @@
 package org.brooklynspeech.pipeline.entrainment;
 
-import java.util.concurrent.Semaphore;
-
 import org.brooklynspeech.pipeline.Processor;
 import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
