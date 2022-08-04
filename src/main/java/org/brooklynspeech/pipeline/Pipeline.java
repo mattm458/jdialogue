@@ -3,19 +3,26 @@ package org.brooklynspeech.pipeline;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+
 import javax.sound.sampled.UnsupportedAudioFileException;
+
 import org.brooklynspeech.pipeline.data.Context;
 
 public class Pipeline {
 
     private Source source;
-    List<Processor> processors;
-    ArrayList<Thread> threads;
+    private final List<Processor> processors;
+    private final ArrayList<Thread> threads;
 
     public Pipeline(Source source, List<Processor> processors) {
         this.source = source;
         this.processors = processors;
         this.threads = new ArrayList<>();
+    }
+
+    public BlockingQueue getOutQueue() {
+        return this.processors.get(this.processors.size()-1).getOutQueue();
     }
 
     public void start() {
@@ -55,13 +62,10 @@ public class Pipeline {
     public static class Builder {
 
         private Source source;
-        private final ArrayList<Processor> processors;
+        private final ArrayList<Processor> processors = new ArrayList<>();
 
-        public Builder() {
-            this.processors = new ArrayList<>();
-        }
-
-        public static Builder withAudioFileSource(String path, int packetSize) throws UnsupportedAudioFileException, IOException {
+        public static Builder withAudioFileSource(String path, int packetSize)
+                throws UnsupportedAudioFileException, IOException {
             Builder builder = new Builder();
             builder.setSource(new AudioFileSource(path, packetSize));
 
@@ -74,6 +78,14 @@ public class Pipeline {
 
             return builder;
         }
+
+        public static Builder fromMergedPipelines(Pipeline... pipelines) {
+            Builder builder = new Builder();
+            builder.setSource(new MergeSource(pipelines));
+
+            return builder;
+        }
+
 
         public Builder setSource(Source source) {
             this.source = source;
