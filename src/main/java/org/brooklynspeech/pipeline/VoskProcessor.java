@@ -1,9 +1,9 @@
 package org.brooklynspeech.pipeline;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+
 import javax.sound.sampled.AudioFormat;
+
 import org.brooklynspeech.audio.sink.ArraySink;
 import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
@@ -11,9 +11,13 @@ import org.brooklynspeech.pipeline.data.Transcript;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class VoskProcessor extends Processor<AudioPacket, Features> {
 
-    private final Recognizer recognizer;
+    private ThreadLocal<Recognizer> recognizer = new ThreadLocal<>();
+    private final String model;
     private final AudioFormat format;
 
     private final ObjectMapper objectMapper;
@@ -28,14 +32,10 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
             int sampleRate,
             AudioFormat format,
             int conversationId,
-            Context context
-    ) throws IOException {
+            Context context) throws IOException {
         super();
 
-        // Set up the Vosk recognizer
-        this.recognizer = new Recognizer(new Model(model), sampleRate);
-        this.recognizer.setWords(true); // Causes Vosk to return word alignments
-
+        this.model = model;
         this.format = format;
         this.objectMapper = new ObjectMapper();
         this.context = context;
@@ -46,11 +46,31 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
     }
 
     @Override
+    public void start() {
+        // Set up the Vosk recognizer
+        try {
+            Recognizer recognizer = new Recognizer(new Model(this.model), (int) this.format.getSampleRate());
+            recognizer.setWords(true); // Causes Vosk to return word alignments
+            this.recognizer.set(recognizer);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+            return;
+        }
+
+        super.start();
+    }
+
+    @Override
     public Features doProcess(AudioPacket input) {
         this.buffer.write(input.bytes, input.len);
 
-        if (this.recognizer.acceptWaveForm(input.bytes, input.len)) {
-            final String json = this.recognizer.getResult();
+        Recognizer recognizer = this.recognizer.get();
+
+        if (recognizer.acceptWaveForm(input.bytes, input.len)) {
+
+            final String json = recognizer.getResult();
+
             final Transcript t;
 
             try {
@@ -64,8 +84,6 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
             if (t.result.isEmpty()) {
                 return null;
             }
-
-            System.out.println(t.text);
 
             float start = t.result.get(0).start;
             float end = t.result.get(t.result.size() - 1).end;
