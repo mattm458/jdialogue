@@ -1,6 +1,9 @@
 package org.brooklynspeech.pipeline.entrainment;
 
+import java.util.concurrent.Semaphore;
+
 import org.brooklynspeech.pipeline.Processor;
+import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
 import org.pytorch.IValue;
 import org.pytorch.Module;
@@ -48,7 +51,7 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         return IValue.from(Tensor.fromBlob(featureInput_val, new long[] { batchSize, featureDim }));
     }
 
-    private static IValue getFeatureHistory(int batchSize, int maxLength, int encodedDim) {
+    public static IValue getFeatureHistory(int batchSize, int maxLength, int encodedDim) {
         final float[] featureInput_val = new float[batchSize * maxLength * encodedDim];
         return IValue.from(Tensor.fromBlob(featureInput_val, new long[] { batchSize, maxLength, encodedDim }));
     }
@@ -58,7 +61,7 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         return IValue.from(Tensor.fromBlob(featureMask_val, new long[] { batchSize, maxLength, 1 }));
     }
 
-    private static IValue getHidden(int batchSize, int numLayers, int hiddenSize) {
+    public static IValue getHidden(int batchSize, int numLayers, int hiddenSize) {
         IValue[] hidden = new IValue[numLayers];
 
         for (int i = 0; i < numLayers; i++) {
@@ -71,8 +74,17 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         return IValue.listFrom(hidden);
     }
 
-    private static IValue getSpeaker(int batchSize) {
+    private static IValue getSpeaker(int batchSize, Features.Speaker speaker) {
         final float[] speaker_val = new float[batchSize * 2];
+
+        if (speaker == Features.Speaker.partner) {
+            speaker_val[0] = 1.0f;
+        } else {
+            speaker_val[1] = 1.0f;
+        }
+
+        System.out.println(speaker_val[0] + " " + speaker_val[1]);
+
         return IValue.from(Tensor.fromBlob(speaker_val, new long[] { batchSize, 2 }));
     }
 
@@ -88,13 +100,15 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
     }
 
     private static IValue getEmbeddingLen(int batchSize) {
-        final int[] embeddingLen_val = new int[batchSize];
+        final long[] embeddingLen_val = new long[batchSize];
         embeddingLen_val[0] = 10;
         return IValue.from(Tensor.fromBlob(embeddingLen_val, new long[] { batchSize }));
     }
 
     @Override
-    public Features doProcess(Features ourFeatures) {
+    public Features doProcess(Features features) {
+        Context context = features.getContext();
+
         final int batchSize = 1;
         final int predIdxsSize = 1;
         final int textSize = 100;
@@ -102,27 +116,23 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
 
         final IValue timestep = IValue.from(0);
         final IValue featureInput = getFeatureInput(batchSize, this.featureDim);
-        final IValue featureHistory = getFeatureHistory(batchSize, this.maxLength, this.encodedDim);
+        final IValue featureHistory = context.getTorchFeature("featureHistory");
         final IValue featureMask = getFeatureMask(batchSize, this.maxLength);
-        final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers,
-                this.featureEncoderHiddenDim);
-        final IValue decoderHidden = getHidden(batchSize, this.decoderLayers, this.decoderHiddenDim);
-        final IValue speaker = getSpeaker(batchSize);
+        final IValue featureEncoderHidden = context.getTorchFeature("featureEncoderHidden");
+        final IValue decoderHidden = context.getTorchFeature("decoderHidden");
+        final IValue speaker = getSpeaker(batchSize, features.getSpeaker());
         final IValue predIdxs = getPredIdxs(batchSize, predIdxsSize);
         final IValue embeddingInput = getEmbedding(batchSize, textSize, this.embeddingDim);
         final IValue embeddingLen = getEmbeddingLen(batchSize);
         final IValue predEmbeddingInput = getEmbedding(batchSize, predTextSize, this.embeddingDim);
         final IValue predEmbeddingLen = getEmbeddingLen(batchSize);
 
-        final IValue output = this.model.forward(timestep, featureInput,
+        this.model.forward(timestep, featureInput,
                 featureHistory, featureMask,
                 featureEncoderHidden, decoderHidden, speaker, predIdxs, embeddingInput,
                 embeddingLen,
                 predEmbeddingInput, predEmbeddingLen);
 
-        IValue[] outTuple = output.toTuple();
-        System.out.println(outTuple[0].toTensor().getDataAsFloatArray()[0]);
-
-        return ourFeatures;
+        return features;
     }
 }
