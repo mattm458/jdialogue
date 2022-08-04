@@ -1,5 +1,5 @@
 libtorch
-libtorch-*
+libtorch*
 
 # Compiled class file
 *.class
