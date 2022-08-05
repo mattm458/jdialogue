@@ -7,16 +7,13 @@ import org.brooklynspeech.pipeline.component.Pipeline;
 import org.brooklynspeech.pipeline.component.Source;
 
 public class MergeSource<T> extends Source<T> {
-    protected ArrayList<BlockingQueue<T>> inQueues = new ArrayList<>();
 
+    protected ArrayList<BlockingQueue<T>> inQueues = new ArrayList<>();
     private int i = -1;
 
-    public MergeSource(Pipeline[] pipelines) {
-        super();
-
-        for (Pipeline p : pipelines) {
-            this.inQueues.add(p.getOutQueue());
-        }
+    public MergeSource<T> add(Pipeline<T> pipeline) {
+        this.inQueues.add(pipeline.getOutQueue());
+        return this;
     }
 
     public T doProcess() {
