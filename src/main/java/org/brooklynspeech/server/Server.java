@@ -3,8 +3,10 @@ package org.brooklynspeech.server;
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.pipeline.ContextCommitProcessor;
+import org.brooklynspeech.pipeline.DummyTTSProcessor;
 import org.brooklynspeech.pipeline.EmbeddingFeatureProcessor;
 import org.brooklynspeech.pipeline.FileSaverProcessor;
+import org.brooklynspeech.pipeline.PartnerFilterProcessor;
 import org.brooklynspeech.pipeline.PartnerStatsProcessor;
 import org.brooklynspeech.pipeline.PraatFeatureProcessor;
 import org.brooklynspeech.pipeline.VADProcessor;
@@ -15,11 +17,12 @@ import org.brooklynspeech.pipeline.data.Features;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentStrategyProcessor;
 import org.brooklynspeech.pipeline.source.AudioFileSource;
 import org.brooklynspeech.pipeline.source.DummyTextSource;
+import org.brooklynspeech.pipeline.source.MergeSource;
 
 public class Server {
         private final Pipeline<Features> userPipeline;
         private final Pipeline<Features> agentPipeline;
-        // private final Pipeline mergedPipeline;
+        private final Pipeline<Features> mergedPipeline;
 
         public static final AudioFormat FORMAT = new AudioFormat(16000, 16, 1, true, false);
         public static final int maxLength = 100;
@@ -31,15 +34,7 @@ public class Server {
         public Server() throws Exception {
                 final Context context = new Context(0);
 
-                context.setTorchFeature("featureHistory",
-                                NeuralEntrainmentStrategyProcessor.getFeatureHistory(1, Server.maxLength,
-                                                Server.encodedSize));
-                context.setTorchFeature("featureEncoderHidden",
-                                NeuralEntrainmentStrategyProcessor.getHidden(1, Server.featureEncoderLayers,
-                                                Server.hiddenSize));
-                context.setTorchFeature("decoderHidden",
-                                NeuralEntrainmentStrategyProcessor.getHidden(1, Server.decoderLayers,
-                                                Server.hiddenSize));
+                NeuralEntrainmentStrategyProcessor neuralEntrainmentStrategyProcessor = new NeuralEntrainmentStrategyProcessor();
 
                 this.agentPipeline = new Pipeline<>(new DummyTextSource(context))
                                 .addProcessor(new EmbeddingFeatureProcessor("glove.6B.300d.txt", 300))
@@ -52,21 +47,19 @@ public class Server {
                                 .addProcessor(new PraatFeatureProcessor())
                                 .addProcessor(new EmbeddingFeatureProcessor("glove.6B.300d.txt", 300))
                                 .addProcessor(new ContextCommitProcessor())
-                                .addProcessor(new PartnerStatsProcessor())
-                                .addProcessor(new NeuralEntrainmentStrategyProcessor());
+                                .addProcessor(new PartnerStatsProcessor());
 
-                // this.mergedPipeline =
-                // Pipeline.Builder.fromMergedPipelines(this.agentPipeline, this.userPipeline)
-                // .addProcessor(new NeuralEntrainmentStrategyProcessor())
-                // .addProcessor(new PartnerFilterProcessor())
-                // .addProcessor(new DummyTTSProcessor())
-                // .build();
+                this.mergedPipeline = new Pipeline<>(
+                                new MergeSource<Features>().add(this.agentPipeline).add(this.userPipeline))
+                                .addProcessor(neuralEntrainmentStrategyProcessor)
+                                .addProcessor(new PartnerFilterProcessor())
+                                .addProcessor(new DummyTTSProcessor());
 
         }
 
         public void start() {
-                // this.mergedPipeline.start();
-                this.userPipeline.start();
+                this.mergedPipeline.start();
                 this.agentPipeline.start();
+                this.userPipeline.start();
         }
 }
