@@ -1,7 +1,6 @@
 package org.brooklynspeech.pipeline.entrainment;
 
 import org.brooklynspeech.pipeline.component.Processor;
-import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
 import org.pytorch.IValue;
 import org.pytorch.Module;
@@ -42,6 +41,28 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
 
         this.hasEmbeddings = hasEmbeddings;
         this.embeddingDim = embeddingDim;
+
+        int batchSize = 1;
+
+        final IValue timestep = IValue.from(0);
+        final IValue featureInput = getFeatureInput(batchSize, this.featureDim);
+        final IValue featureHistory = getFeatureHistory(batchSize, this.maxLength, this.encodedDim);
+        final IValue featureMask = getFeatureMask(batchSize, this.maxLength);
+        final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers,
+                this.featureEncoderHiddenDim);
+        final IValue decoderHidden = getHidden(batchSize, this.decoderLayers, this.decoderHiddenDim);
+        final IValue speaker = getSpeaker(batchSize, Features.Speaker.us);
+        final IValue predIdxs = getPredIdxs(batchSize, 1);
+        final IValue embeddingInput = getEmbedding(batchSize, 100, this.embeddingDim);
+        final IValue embeddingLen = getEmbeddingLen(batchSize);
+        final IValue predEmbeddingInput = getEmbedding(batchSize, 100, this.embeddingDim);
+        final IValue predEmbeddingLen = getEmbeddingLen(batchSize);
+
+        this.model.forward(timestep, featureInput,
+                featureHistory, featureMask,
+                featureEncoderHidden, decoderHidden, speaker, predIdxs, embeddingInput,
+                embeddingLen,
+                predEmbeddingInput, predEmbeddingLen);
     }
 
     public NeuralEntrainmentStrategyProcessor() {
@@ -109,8 +130,6 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
 
     @Override
     public Features doProcess(Features features) {
-        Context context = features.getContext();
-
         final int batchSize = 1;
         final int predIdxsSize = 1;
         final int textSize = 100;
@@ -118,10 +137,11 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
 
         final IValue timestep = IValue.from(0);
         final IValue featureInput = getFeatureInput(batchSize, this.featureDim);
-        final IValue featureHistory = context.getTorchFeature("featureHistory");
+        final IValue featureHistory = getFeatureHistory(batchSize, this.maxLength, this.encodedDim);
         final IValue featureMask = getFeatureMask(batchSize, this.maxLength);
-        final IValue featureEncoderHidden = context.getTorchFeature("featureEncoderHidden");
-        final IValue decoderHidden = context.getTorchFeature("decoderHidden");
+        final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers,
+                this.featureEncoderHiddenDim);
+        final IValue decoderHidden = getHidden(batchSize, this.decoderLayers, this.decoderHiddenDim);
         final IValue speaker = getSpeaker(batchSize, features.getSpeaker());
         final IValue predIdxs = getPredIdxs(batchSize, predIdxsSize);
         final IValue embeddingInput = getEmbedding(batchSize, textSize, this.embeddingDim);

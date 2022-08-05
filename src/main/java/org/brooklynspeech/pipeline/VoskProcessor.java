@@ -17,8 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class VoskProcessor extends Processor<AudioPacket, Features> {
 
-    private ThreadLocal<Recognizer> recognizer = new ThreadLocal<>();
-    private final String model;
+    private final Recognizer recognizer;
     private final AudioFormat format;
 
     private final ObjectMapper objectMapper;
@@ -27,7 +26,9 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
     private final ArraySink buffer;
 
     public VoskProcessor(String model, AudioFormat format, Context context) throws IOException {
-        this.model = model;
+        this.recognizer = new Recognizer(new Model(model), (int) format.getSampleRate());
+        this.recognizer.setWords(true); // Causes Vosk to return word alignments
+
         this.format = format;
         this.objectMapper = new ObjectMapper();
         this.context = context;
@@ -36,30 +37,12 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
     }
 
     @Override
-    protected void setup() {
-        try {
-            Recognizer recognizer = new Recognizer(new Model(this.model), (int) this.format.getSampleRate());
-            recognizer.setWords(true); // Causes Vosk to return word alignments
-
-            this.recognizer.set(recognizer);
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            System.exit(1);
-            return;
-        }
-
-        super.setup();
-    }
-
-    @Override
     public Features doProcess(AudioPacket input) {
         this.buffer.write(input.bytes, input.len);
 
-        Recognizer recognizer = this.recognizer.get();
+        if (this.recognizer.acceptWaveForm(input.bytes, input.len)) {
 
-        if (recognizer.acceptWaveForm(input.bytes, input.len)) {
-
-            final String json = recognizer.getResult();
+            final String json = this.recognizer.getResult();
 
             final Transcript t;
 
