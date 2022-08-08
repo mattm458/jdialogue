@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline.component;
+package org.brooklynspeech.pipeline.core;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

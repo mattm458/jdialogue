@@ -1,10 +1,10 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.audio;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.brooklynspeech.pipeline.component.Processor;
+import org.brooklynspeech.pipeline.core.Processor;
 import org.brooklynspeech.pipeline.data.Features;
 
 public class PraatFeatureProcessor extends Processor<Features, Features> {

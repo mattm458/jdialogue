@@ -1,11 +1,11 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.asr;
 
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.audio.sink.ArraySink;
-import org.brooklynspeech.pipeline.component.Processor;
+import org.brooklynspeech.pipeline.core.Processor;
 import org.brooklynspeech.pipeline.data.Context;
 import org.brooklynspeech.pipeline.data.Features;
 import org.brooklynspeech.pipeline.data.Transcript;

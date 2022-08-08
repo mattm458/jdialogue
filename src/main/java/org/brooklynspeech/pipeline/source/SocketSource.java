@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
 
-import org.brooklynspeech.pipeline.component.Source;
+import org.brooklynspeech.pipeline.core.Source;
 
 public class SocketSource extends Source<byte[]> {
     private final InetAddress address;

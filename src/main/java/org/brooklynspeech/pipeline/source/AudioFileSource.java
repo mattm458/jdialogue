@@ -7,7 +7,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.brooklynspeech.pipeline.component.Source;
+import org.brooklynspeech.pipeline.core.Source;
 
 public class AudioFileSource extends Source<byte[]> {
 

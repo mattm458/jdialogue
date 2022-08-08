@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.brooklynspeech.pipeline.component.Processor;
+import org.brooklynspeech.pipeline.core.Processor;
 import org.brooklynspeech.pipeline.data.Features;
 
 import edu.stanford.nlp.ling.CoreLabel;

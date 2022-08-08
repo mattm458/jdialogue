@@ -3,8 +3,8 @@ package org.brooklynspeech.pipeline.source;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 
-import org.brooklynspeech.pipeline.component.Pipeline;
-import org.brooklynspeech.pipeline.component.Source;
+import org.brooklynspeech.pipeline.core.Pipeline;
+import org.brooklynspeech.pipeline.core.Source;
 
 public class MergeSource<T> extends Source<T> {
 
