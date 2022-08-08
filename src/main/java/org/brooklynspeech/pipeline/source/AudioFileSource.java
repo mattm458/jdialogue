@@ -34,7 +34,7 @@ public class AudioFileSource extends Source<byte[]> {
             while (!Thread.currentThread().isInterrupted()
                     && (length = this.stream.read(bytes, 0, this.packetSize)) > 0) {
                 length = this.stream.read(bytes, 0, packetSize);
-                this.queue.add(Arrays.copyOf(bytes, length));
+                this.outQueue.add(Arrays.copyOf(bytes, length));
             }
         } catch (IOException e) {
             e.printStackTrace(System.out);

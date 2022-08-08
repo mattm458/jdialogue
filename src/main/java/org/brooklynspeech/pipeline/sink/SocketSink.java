@@ -15,7 +15,7 @@ public class SocketSink extends Sink<byte[]> {
     private final int port;
 
     public SocketSink(BlockingQueue<byte[]> queue, InetAddress address, int port) throws SocketException {
-        super(queue);
+        super();
 
         this.socket = new DatagramSocket();
         this.address = address;
@@ -26,7 +26,7 @@ public class SocketSink extends Sink<byte[]> {
     public void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] buffer = this.queue.take();
+                byte[] buffer = this.inQueue.take();
                 this.socket.send(new DatagramPacket(buffer, buffer.length, this.address, this.port));
             }
         } catch (Exception e) {

@@ -2,12 +2,9 @@ package org.brooklynspeech.pipeline.core;
 
 import java.util.concurrent.BlockingQueue;
 
-public abstract class Processor<InType, OutType> extends Unit<OutType> {
+public abstract class Processor<InType, OutType> extends Producer<OutType> {
 
     protected BlockingQueue<InType> inQueue = null;
-
-    protected void setup() {
-    }
 
     public void setInQueue(BlockingQueue<InType> inQueue) throws Exception {
         if (this.inQueue != null) {
@@ -17,9 +14,13 @@ public abstract class Processor<InType, OutType> extends Unit<OutType> {
         this.inQueue = inQueue;
     }
 
+    public void setup() {
+    }
+
     @Override
     public final void run() {
         this.setup();
+
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 final InType input = this.inQueue.take();
@@ -29,7 +30,7 @@ public abstract class Processor<InType, OutType> extends Unit<OutType> {
                     continue;
                 }
 
-                queue.add(output);
+                outQueue.add(output);
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
