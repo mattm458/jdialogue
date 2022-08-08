@@ -13,12 +13,9 @@ import org.brooklynspeech.client.audio.common.AudioSocket;
 public class MicrophoneSender extends AudioSocket {
 
     private TargetDataLine mic;
-    private final String outFilename;
 
-    public MicrophoneSender(InetAddress address, int port, AudioFormat format, int bufferSize,
-            String outFilename) throws IOException {
+    public MicrophoneSender(InetAddress address, int port, AudioFormat format, int bufferSize) throws IOException {
         super(address, port, format, bufferSize);
-        this.outFilename = outFilename;
     }
 
     @Override
