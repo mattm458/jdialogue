@@ -29,7 +29,7 @@ public class DummyTextSource extends Source<Features> {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 Thread.sleep(interval * 1000);
-                this.outQueue.add(new Features(this.context, Features.Speaker.us, this.text));
+                this.queue.add(new Features(this.context, Features.Speaker.us, this.text));
 
             }
         } catch (InterruptedException e) {

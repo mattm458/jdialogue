@@ -23,12 +23,12 @@ public class Pipeline<OutType> extends Thread {
         List<Thread> processors = new ArrayList<>(this.processors);
         processors.add(this.lastProcessor);
 
-        p.setInQueue(this.lastProcessor.getOutQueue());
+        p.setInQueue(this.lastProcessor.getQueue());
         return new Pipeline<T>(processors, p);
     }
 
     public BlockingQueue<OutType> getOutQueue() {
-        return this.lastProcessor.getOutQueue();
+        return this.lastProcessor.getQueue();
     }
 
     @Override

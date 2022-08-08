@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import org.pytorch.IValue;
 
@@ -22,6 +23,9 @@ public class Context {
 
     private final HashMap<String, IValue> torchFeatures = new HashMap<>();
 
+    private final Semaphore conversation = new Semaphore(1);
+    private final Semaphore stats = new Semaphore(1);
+
     public Context(int conversationId) {
         this.conversationId = conversationId;
     }
@@ -30,7 +34,17 @@ public class Context {
         return this.conversationId;
     }
 
-    public void commitFeatures(Features f) {
+    public void acquireConversation() throws InterruptedException {
+        this.conversation.acquire();
+    }
+
+    public void releaseConversation() {
+        this.conversation.release();
+    }
+
+    public void commitFeatures(Features f) throws InterruptedException {
+        this.conversation.acquire();
+
         this.features.add(f);
 
         if (f.getSpeaker() == Features.Speaker.partner) {
@@ -38,6 +52,8 @@ public class Context {
         } else {
             this.usFeatures.add(f);
         }
+
+        this.conversation.release();
     }
 
     public Iterator<Features> getFeaturesIterator() {
@@ -50,6 +66,10 @@ public class Context {
 
     public List<Features> getPartnerFeatures() {
         return this.partnerFeatures;
+    }
+
+    public void acquireStats() throws InterruptedException {
+        this.stats.acquire();
     }
 
     public double getUsMean(String key) {
@@ -82,6 +102,10 @@ public class Context {
 
     public void setPartnerStd(String key, double value) {
         this.partnerStd.put(key, value);
+    }
+
+    public void releaseStats() {
+        this.stats.release();
     }
 
     public IValue getTorchFeature(String key) {

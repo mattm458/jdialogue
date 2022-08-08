@@ -3,16 +3,20 @@ package org.brooklynspeech.pipeline.core;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class Unit<OutType> extends Thread {
+public abstract class Unit<T> extends Thread {
 
-    protected final LinkedBlockingQueue<OutType> outQueue;
+    protected final BlockingQueue<T> queue;
 
     public Unit() {
         super();
-        this.outQueue = new LinkedBlockingQueue<>();
+        this.queue = new LinkedBlockingQueue<>();
     }
 
-    public BlockingQueue<OutType> getOutQueue() {
-        return this.outQueue;
+    public Unit(BlockingQueue<T> queue) {
+        this.queue = queue;
+    }
+
+    public BlockingQueue<T> getQueue() {
+        return this.queue;
     }
 }

@@ -42,7 +42,7 @@ public class SocketSource extends Source<byte[]> {
                 socket.receive(chunk);
                 length = chunk.getLength();
 
-                this.outQueue.add(Arrays.copyOf(buffer, length));
+                this.queue.add(Arrays.copyOf(buffer, length));
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
