@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.concurrent.BlockingQueue;
 
 import org.brooklynspeech.pipeline.core.Sink;
 
@@ -14,7 +13,7 @@ public class SocketSink extends Sink<byte[]> {
     private final InetAddress address;
     private final int port;
 
-    public SocketSink(BlockingQueue<byte[]> queue, InetAddress address, int port) throws SocketException {
+    public SocketSink(InetAddress address, int port) throws SocketException {
         super();
 
         this.socket = new DatagramSocket();
