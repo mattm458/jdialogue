@@ -9,21 +9,22 @@ import org.brooklynspeech.pipeline.component.Source;
 public class MergeSource<T> extends Source<T> {
 
     protected ArrayList<BlockingQueue<T>> inQueues = new ArrayList<>();
-    private int i = -1;
 
     public MergeSource<T> add(Pipeline<T> pipeline) {
         this.inQueues.add(pipeline.getOutQueue());
         return this;
     }
 
-    public T doProcess() {
-        this.i++;
-
-        if (this.i >= this.inQueues.size()) {
-            this.i = 0;
+    @Override
+    public void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+            for (BlockingQueue<T> q : inQueues) {
+                T message = q.poll();
+                if (message != null) {
+                    this.outQueue.add(message);
+                }
+            }
         }
-
-        return this.inQueues.get(this.i).poll();
     }
 
 }

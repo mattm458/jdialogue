@@ -15,7 +15,7 @@ import org.vosk.Recognizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class VoskProcessor extends Processor<AudioPacket, Features> {
+public class VoskProcessor extends Processor<byte[], Features> {
 
     private final Recognizer recognizer;
     private final AudioFormat format;
@@ -37,10 +37,10 @@ public class VoskProcessor extends Processor<AudioPacket, Features> {
     }
 
     @Override
-    public Features doProcess(AudioPacket input) {
-        this.buffer.write(input.bytes, input.len);
+    public Features doProcess(byte[] input) {
+        this.buffer.write(input, input.length);
 
-        if (this.recognizer.acceptWaveForm(input.bytes, input.len)) {
+        if (this.recognizer.acceptWaveForm(input, input.length)) {
 
             final String json = this.recognizer.getResult();
 

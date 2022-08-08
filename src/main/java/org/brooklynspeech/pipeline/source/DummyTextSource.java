@@ -8,19 +8,14 @@ import org.brooklynspeech.pipeline.data.Features;
 
 public class DummyTextSource extends Source<Features> {
 
-    protected final Context context;
-
-    long last;
-    String text;
-    long interval;
+    private final Context context;
+    private final String text;
+    private final long interval;
 
     public DummyTextSource(Context context, String text, long interval) {
         super();
 
         this.context = context;
-
-        last = Instant.now().getEpochSecond();
-
         this.text = text;
         this.interval = interval;
     }
@@ -30,13 +25,14 @@ public class DummyTextSource extends Source<Features> {
     }
 
     @Override
-    public Features doProcess() {
-        long now = Instant.now().getEpochSecond();
-        if (now - last > interval) {
-            last = now;
-            return new Features(this.context, Features.Speaker.us, this.text);
-        } else {
-            return null;
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                Thread.sleep(interval * 1000);
+                this.outQueue.add(new Features(this.context, Features.Speaker.us, this.text));
+
+            }
+        } catch (InterruptedException e) {
         }
     }
 }

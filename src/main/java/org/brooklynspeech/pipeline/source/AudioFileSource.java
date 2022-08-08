@@ -1,15 +1,15 @@
 package org.brooklynspeech.pipeline.source;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.brooklynspeech.pipeline.AudioPacket;
 import org.brooklynspeech.pipeline.component.Source;
 
-public class AudioFileSource extends Source<AudioPacket> {
+public class AudioFileSource extends Source<byte[]> {
 
     private final AudioInputStream stream;
     private final int packetSize;
@@ -26,23 +26,19 @@ public class AudioFileSource extends Source<AudioPacket> {
     }
 
     @Override
-    public AudioPacket doProcess() {
+    public void run() {
         byte[] bytes = new byte[packetSize];
-        int len;
+        int length;
 
         try {
-            len = this.stream.read(bytes, 0, packetSize);
-
-            if (len == -1) {
-                return null;
+            while (!Thread.currentThread().isInterrupted()
+                    && (length = this.stream.read(bytes, 0, this.packetSize)) > 0) {
+                length = this.stream.read(bytes, 0, packetSize);
+                this.outQueue.add(Arrays.copyOf(bytes, length));
             }
-
         } catch (IOException e) {
             e.printStackTrace(System.out);
             System.exit(1);
-            return null;
         }
-
-        return new AudioPacket(bytes, len);
     }
 }
