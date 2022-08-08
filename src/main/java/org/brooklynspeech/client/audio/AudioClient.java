@@ -5,8 +5,8 @@ import java.net.InetAddress;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.brooklynspeech.client.audio.common.AudioSocket;
 import org.brooklynspeech.client.audio.sender.DummyAudioSender;
-import org.brooklynspeech.client.audio.sender.Sender;
 
 public class AudioClient {
 
@@ -15,7 +15,7 @@ public class AudioClient {
     private static AudioFormat FORMAT = new AudioFormat(16000, 16, 1, true, true);
 
     public static void main(String[] args) {
-        Sender sender;
+        AudioSocket sender;
 
         try {
             sender = new DummyAudioSender(InetAddress.getByName("localhost"), 9001, FORMAT, 1024,

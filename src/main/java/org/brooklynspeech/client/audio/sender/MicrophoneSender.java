@@ -8,7 +8,9 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
 
-public class MicrophoneSender extends Sender {
+import org.brooklynspeech.client.audio.common.AudioSocket;
+
+public class MicrophoneSender extends AudioSocket {
 
     private TargetDataLine mic;
     private final String outFilename;
@@ -21,6 +23,7 @@ public class MicrophoneSender extends Sender {
 
     @Override
     public void run() {
+        this.open = true;
         try {
             this.mic = AudioSystem.getTargetDataLine(this.format);
             this.mic.open(this.format, this.bufferSize);
@@ -28,21 +31,17 @@ public class MicrophoneSender extends Sender {
 
             byte[] buffer = new byte[this.bufferSize];
 
-            while (mic.isOpen()) {
+            while (this.open && mic.isOpen()) {
                 int len = mic.read(buffer, 0, this.bufferSize);
                 socket.send(new DatagramPacket(buffer, len, this.remoteAudioAddress, this.remoteAudioPort));
             }
+
+            this.mic.stop();
+            this.mic.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
             return;
         }
-    }
-
-    @Override
-    public void cleanup() {
-        super.cleanup();
-        this.mic.stop();
-        this.mic.close();
     }
 }

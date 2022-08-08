@@ -1,4 +1,4 @@
-package org.brooklynspeech.client.audio.sender;
+package org.brooklynspeech.client.audio.common;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -6,7 +6,7 @@ import java.net.SocketException;
 
 import javax.sound.sampled.AudioFormat;
 
-public abstract class Sender extends Thread {
+public abstract class AudioSocket extends Thread {
     protected final DatagramSocket socket;
 
     protected final InetAddress remoteAudioAddress;
@@ -14,7 +14,9 @@ public abstract class Sender extends Thread {
     protected final AudioFormat format;
     protected final int bufferSize;
 
-    public Sender(InetAddress remoteAudioAddress, int remoteAudioPort, AudioFormat format, int bufferSize)
+    protected boolean open;
+
+    public AudioSocket(InetAddress remoteAudioAddress, int remoteAudioPort, AudioFormat format, int bufferSize)
             throws SocketException {
         this.socket = new DatagramSocket();
 
@@ -22,9 +24,11 @@ public abstract class Sender extends Thread {
         this.remoteAudioPort = remoteAudioPort;
         this.format = format;
         this.bufferSize = bufferSize;
+
+        this.open = false;
     }
 
-    public void cleanup() {
-        this.socket.close();
+    public void close() {
+        this.open = false;
     }
 }

@@ -8,9 +8,10 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import org.brooklynspeech.client.audio.common.AudioSocket;
 import org.brooklynspeech.pipeline.source.AudioFileSource;
 
-public class DummyAudioSender extends Sender {
+public class DummyAudioSender extends AudioSocket {
 
     private final String wavFile;
     private AudioInputStream stream;
@@ -23,6 +24,8 @@ public class DummyAudioSender extends Sender {
 
     @Override
     public void run() {
+        this.open = true;
+
         try {
             this.stream = AudioSystem.getAudioInputStream(this.format,
                     AudioSystem.getAudioInputStream(
@@ -31,20 +34,10 @@ public class DummyAudioSender extends Sender {
             byte[] buffer = new byte[this.bufferSize];
             int len;
 
-            while ((len = stream.read(buffer, 0, this.bufferSize)) > 0) {
+            while (this.open && (len = stream.read(buffer, 0, this.bufferSize)) >= 0) {
                 socket.send(new DatagramPacket(buffer, len, this.remoteAudioAddress, this.remoteAudioPort));
             }
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            System.exit(1);
-        }
-    }
 
-    @Override
-    public void cleanup() {
-        super.cleanup();
-
-        try {
             this.stream.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
