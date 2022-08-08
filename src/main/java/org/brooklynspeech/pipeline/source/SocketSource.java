@@ -1,56 +1,40 @@
 package org.brooklynspeech.pipeline.source;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import org.brooklynspeech.pipeline.core.Source;
 
 public class SocketSource extends Source<byte[]> {
-    private final InetAddress address;
     private final int port;
     private final int bufferSize;
 
-    public SocketSource(InetAddress address, int port, int bufferSize) {
+    public SocketSource(int port, int bufferSize) {
         super();
 
-        this.address = address;
         this.port = port;
         this.bufferSize = bufferSize;
     }
 
     @Override
     public void run() {
-        final DatagramSocket socket;
-
         try {
-            socket = new DatagramSocket(this.port, this.address);
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-            System.exit(1);
-            return;
-        }
+            final ServerSocket serverSocket = new ServerSocket(this.port);
+            final Socket clientSocket = serverSocket.accept();
 
-        try {
-            byte[] buffer = new byte[this.bufferSize];
-            int length = 0;
+            InputStream stream = clientSocket.getInputStream();
 
             while (!Thread.currentThread().isInterrupted()) {
-                DatagramPacket chunk = new DatagramPacket(buffer, this.bufferSize);
-                socket.receive(chunk);
-                length = chunk.getLength();
-
-                this.outQueue.add(Arrays.copyOf(buffer, length));
+                this.outQueue.add(stream.readNBytes(this.bufferSize));
             }
+
+            clientSocket.close();
+            serverSocket.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
             return;
-        } finally {
-            socket.close();
         }
-
     }
 }
