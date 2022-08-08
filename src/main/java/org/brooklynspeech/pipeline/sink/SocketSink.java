@@ -1,32 +1,36 @@
 package org.brooklynspeech.pipeline.sink;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Arrays;
 
 import org.brooklynspeech.pipeline.core.Sink;
 
 public class SocketSink extends Sink<byte[]> {
 
-    private final DatagramSocket socket;
-    private final InetAddress address;
-    private final int port;
+    private final ServerSocket serverSocket;
 
-    public SocketSink(InetAddress address, int port) throws SocketException {
+    public SocketSink(int port) throws IOException {
         super();
-
-        this.socket = new DatagramSocket();
-        this.address = address;
-        this.port = port;
+        this.serverSocket = new ServerSocket(port);
     }
 
     @Override
     public void run() {
         try {
+            Socket clientSocket = this.serverSocket.accept();
+            OutputStream stream = clientSocket.getOutputStream();
+
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] buffer = this.inQueue.take();
-                this.socket.send(new DatagramPacket(buffer, buffer.length, this.address, this.port));
+                byte[] data = this.inQueue.take();
+
+                if (data.length < 1024) {
+                    data = Arrays.copyOf(data, 1024);
+                }
+                
+                stream.write(data);
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);

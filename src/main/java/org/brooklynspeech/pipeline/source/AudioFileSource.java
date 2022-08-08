@@ -14,7 +14,8 @@ public class AudioFileSource extends Source<byte[]> {
     private final AudioInputStream stream;
     private final int packetSize;
 
-    public AudioFileSource(String filename, int packetSize) throws UnsupportedAudioFileException, IOException {
+    public AudioFileSource(String filename, int packetSize)
+            throws UnsupportedAudioFileException, IOException {
         super();
 
         this.stream = AudioSystem.getAudioInputStream(
@@ -33,7 +34,6 @@ public class AudioFileSource extends Source<byte[]> {
         try {
             while (!Thread.currentThread().isInterrupted()
                     && (length = this.stream.read(bytes, 0, this.packetSize)) > 0) {
-                length = this.stream.read(bytes, 0, packetSize);
                 this.outQueue.add(Arrays.copyOf(bytes, length));
             }
         } catch (IOException e) {
