@@ -1,8 +1,8 @@
 package org.brooklynspeech.client.audio.receiver;
 
-import java.net.DatagramPacket;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -10,10 +10,11 @@ import javax.sound.sampled.SourceDataLine;
 
 import org.brooklynspeech.client.audio.common.AudioSocket;
 
-public class AudioReceiver extends AudioSocket {
-    public AudioReceiver(InetAddress remoteAudioAddress, int remoteAudioPort, AudioFormat format, int bufferSize)
-            throws SocketException {
-        super(remoteAudioAddress, remoteAudioPort, format, bufferSize);
+public class SocketAudioReceiver extends AudioSocket {
+
+    public SocketAudioReceiver(InetAddress address, int port, AudioFormat format, int bufferSize)
+            throws IOException {
+        super(address, port, format, bufferSize);
     }
 
     @Override
@@ -22,18 +23,13 @@ public class AudioReceiver extends AudioSocket {
 
         try {
             final SourceDataLine spk = AudioSystem.getSourceDataLine(this.format);
+            final InputStream inputStream = this.socket.getInputStream();
 
             spk.open(this.format);
             spk.start();
 
-            byte[] buffer = new byte[this.bufferSize];
-            int length = 0;
-
-            while (this.open && spk.isOpen() && (length >= 0)) {
-                DatagramPacket chunk = new DatagramPacket(buffer, this.bufferSize);
-                socket.receive(chunk);
-                length = chunk.getLength();
-                spk.write(chunk.getData(), 0, chunk.getLength());
+            while (this.open && spk.isOpen()) {
+                spk.write(inputStream.readNBytes(this.bufferSize), 0, this.bufferSize);
             }
 
             this.open = false;

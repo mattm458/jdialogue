@@ -1,8 +1,8 @@
 package org.brooklynspeech.client.audio.sender;
 
-import java.net.DatagramPacket;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -15,9 +15,9 @@ public class MicrophoneSender extends AudioSocket {
     private TargetDataLine mic;
     private final String outFilename;
 
-    public MicrophoneSender(InetAddress remoteAudioAddress, int remoteAudioPort, AudioFormat format, int bufferSize,
-            String outFilename) throws SocketException {
-        super(remoteAudioAddress, remoteAudioPort, format, bufferSize);
+    public MicrophoneSender(InetAddress address, int port, AudioFormat format, int bufferSize,
+            String outFilename) throws IOException {
+        super(address, port, format, bufferSize);
         this.outFilename = outFilename;
     }
 
@@ -25,6 +25,8 @@ public class MicrophoneSender extends AudioSocket {
     public void run() {
         this.open = true;
         try {
+            OutputStream outputStream = this.socket.getOutputStream();
+
             this.mic = AudioSystem.getTargetDataLine(this.format);
             this.mic.open(this.format, this.bufferSize);
             this.mic.start();
@@ -33,7 +35,10 @@ public class MicrophoneSender extends AudioSocket {
 
             while (this.open && mic.isOpen()) {
                 int len = mic.read(buffer, 0, this.bufferSize);
-                socket.send(new DatagramPacket(buffer, len, this.remoteAudioAddress, this.remoteAudioPort));
+
+                if (len > 0) {
+                    outputStream.write(buffer, 0, len);
+                }
             }
 
             this.mic.stop();

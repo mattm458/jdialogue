@@ -1,8 +1,8 @@
 package org.brooklynspeech.client.audio.sender;
 
-import java.net.DatagramPacket;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -16,9 +16,9 @@ public class DummyAudioSender extends AudioSocket {
     private final String wavFile;
     private AudioInputStream stream;
 
-    public DummyAudioSender(InetAddress remoteAudioAddress, int remoteAudioPort, AudioFormat format, int bufferSize,
-            String wavFile) throws SocketException {
-        super(remoteAudioAddress, remoteAudioPort, format, bufferSize);
+    public DummyAudioSender(InetAddress address, int port, AudioFormat format, int bufferSize,
+            String wavFile) throws IOException {
+        super(address, port, format, bufferSize);
         this.wavFile = wavFile;
     }
 
@@ -27,6 +27,8 @@ public class DummyAudioSender extends AudioSocket {
         this.open = true;
 
         try {
+            OutputStream outputStream = this.socket.getOutputStream();
+
             this.stream = AudioSystem.getAudioInputStream(this.format,
                     AudioSystem.getAudioInputStream(
                             AudioFileSource.class.getClassLoader().getResourceAsStream(this.wavFile)));
@@ -35,7 +37,9 @@ public class DummyAudioSender extends AudioSocket {
             int len;
 
             while (this.open && (len = stream.read(buffer, 0, this.bufferSize)) >= 0) {
-                socket.send(new DatagramPacket(buffer, len, this.remoteAudioAddress, this.remoteAudioPort));
+                if (len > 0) {
+                    outputStream.write(buffer, 0, len);
+                }
             }
 
             this.stream.close();
