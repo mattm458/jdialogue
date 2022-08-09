@@ -33,7 +33,7 @@ public class MicrophoneSender extends AudioSocket {
             while (this.open && mic.isOpen()) {
                 int len = mic.read(buffer, 0, this.bufferSize);
 
-                if (len > 0) {
+                if (len == this.bufferSize) {
                     outputStream.write(buffer, 0, len);
                 }
             }
