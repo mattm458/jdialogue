@@ -4,7 +4,7 @@ import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.sink.SocketSink;
 import org.brooklynspeech.pipeline.source.SocketSource;
 
-public class PassthroughRelay {
+public class PassthroughRelayPipeline {
     protected static final int SOURCE_PORT = 9001;
     protected static final int SINK_PORT = 9002;
     protected static final int BUFFER_SIZE = 1024;

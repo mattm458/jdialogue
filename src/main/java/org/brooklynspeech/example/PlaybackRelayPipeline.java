@@ -4,7 +4,7 @@ import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.sink.SocketSink;
 import org.brooklynspeech.pipeline.source.AudioFileSource;
 
-public class PlaybackRelay {
+public class PlaybackRelayPipeline {
     protected static final String ip = "10.8.0.10";
     protected static final int PACKET_SIZE = 1024;
 

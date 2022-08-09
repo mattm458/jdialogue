@@ -58,6 +58,8 @@ public class VoskProcessor extends Processor<byte[], Features> {
                 return null;
             }
 
+            System.out.println("Vosk ASR: " + t.text);
+
             float start = t.result.get(0).start;
             float end = t.result.get(t.result.size() - 1).end;
             int startIdx = (int) (start * this.format.getSampleRate() * this.format.getSampleSizeInBits() / 8);
