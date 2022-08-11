@@ -1,6 +1,5 @@
 package org.brooklynspeech.client.audio.sender;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
