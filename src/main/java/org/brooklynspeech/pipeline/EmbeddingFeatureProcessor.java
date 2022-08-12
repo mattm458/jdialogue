@@ -10,14 +10,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.brooklynspeech.pipeline.core.Processor;
+import org.brooklynspeech.pipeline.core.PassthroughProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
 
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 
-public class EmbeddingFeatureProcessor extends Processor<Chunk, Chunk> {
+public class EmbeddingFeatureProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     private static HashMap<String, double[]> embeddings = null;
     private static double[] zeros;
@@ -72,10 +75,12 @@ public class EmbeddingFeatureProcessor extends Processor<Chunk, Chunk> {
     }
 
     @Override
-    public Chunk doProcess(Chunk features) {
-        List<double[]> embeddingsList = EmbeddingFeatureProcessor.getEmbeddings(features.getTranscript());
-        features.setEmbeddings(embeddingsList);
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+        ChunkType chunk = message.chunk;
 
-        return features;
+        List<double[]> embeddingsList = EmbeddingFeatureProcessor.getEmbeddings(chunk.getTranscript());
+        chunk.setEmbeddings(embeddingsList);
+
+        return message;
     }
 }

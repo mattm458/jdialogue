@@ -4,14 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.core.PassthroughProcessor;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.FeatureChunk;
 
-public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
+public class PraatFeatureProcessor<ChunkType extends FeatureChunk, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     @Override
-    public Chunk doProcess(Chunk features) {
-        final String wavPath = features.getWavPath();
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+        ChunkType chunk = message.chunk;
+
+        final String wavPath = chunk.getWavPath();
 
         final ProcessBuilder pb = new ProcessBuilder("praat", "--run", "extract_features.praat", wavPath);
         final Process p;
@@ -41,7 +46,7 @@ public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
                     return null;
                 }
 
-                features.setFeature(featureName, featureValue);
+                chunk.setFeature(featureName, featureValue);
             }
         } catch (IOException e) {
             e.printStackTrace(System.out);
@@ -49,11 +54,11 @@ public class PraatFeatureProcessor extends Processor<Chunk, Chunk> {
             return null;
         }
 
-        features.setFeature(
+        chunk.setFeature(
                 "rate",
-                features.getFeature("duration")
-                        / (features.getTranscript().chars().filter(c -> c == (int) ' ').count() + 1));
+                chunk.getFeature("duration")
+                        / (chunk.getTranscript().chars().filter(c -> c == (int) ' ').count() + 1));
 
-        return features;
+        return message;
     }
 }

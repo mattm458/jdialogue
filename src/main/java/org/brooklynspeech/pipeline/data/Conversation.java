@@ -1,26 +1,19 @@
 package org.brooklynspeech.pipeline.data;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class Conversation {
+public class Conversation<T extends Chunk> {
 
     private final int conversationId;
 
-    private final LinkedList<Chunk> features = new LinkedList<>();
-    private final LinkedList<Chunk> partnerFeatures = new LinkedList<>();
-    private final LinkedList<Chunk> usFeatures = new LinkedList<>();
-
-    private final HashMap<String, Double> usMean = new HashMap<>();
-    private final HashMap<String, Double> usStd = new HashMap<>();
-    private final HashMap<String, Double> partnerMean = new HashMap<>();
-    private final HashMap<String, Double> partnerStd = new HashMap<>();
+    private final LinkedList<T> chunks = new LinkedList<>();
+    private final LinkedList<T> partnerChunks = new LinkedList<>();
+    private final LinkedList<T> usChunks = new LinkedList<>();
 
     private final Semaphore conversation = new Semaphore(1);
-    private final Semaphore stats = new Semaphore(1);
 
     public Conversation(int conversationId) {
         this.conversationId = conversationId;
@@ -38,69 +31,29 @@ public class Conversation {
         this.conversation.release();
     }
 
-    public void commitFeatures(Chunk f) throws InterruptedException {
+    public void commitFeatures(T f) throws InterruptedException {
         this.conversation.acquire();
 
-        this.features.add(f);
+        this.chunks.add(f);
 
         if (f.getSpeaker() == Chunk.Speaker.partner) {
-            this.partnerFeatures.add(f);
+            this.partnerChunks.add(f);
         } else {
-            this.usFeatures.add(f);
+            this.usChunks.add(f);
         }
 
         this.conversation.release();
     }
 
-    public Iterator<Chunk> getFeaturesIterator() {
-        return this.features.iterator();
+    public Iterator<T> getFeaturesIterator() {
+        return this.chunks.iterator();
     }
 
-    public Iterator<Chunk> getPartnerFeaturesIterator() {
-        return this.partnerFeatures.iterator();
+    public Iterator<T> getPartnerFeaturesIterator() {
+        return this.partnerChunks.iterator();
     }
 
-    public List<Chunk> getPartnerFeatures() {
-        return this.partnerFeatures;
-    }
-
-    public void acquireStats() throws InterruptedException {
-        this.stats.acquire();
-    }
-
-    public double getUsMean(String key) {
-        return this.usMean.get(key);
-    }
-
-    public void setUsMean(String key, double value) {
-        this.usMean.put(key, value);
-    }
-
-    public double getUsStd(String key) {
-        return this.usStd.get(key);
-    }
-
-    public void setUsStd(String key, double value) {
-        this.usStd.put(key, value);
-    }
-
-    public double getPartnerMean(String key) {
-        return this.partnerMean.get(key);
-    }
-
-    public void setPartnerMean(String key, double value) {
-        this.partnerMean.put(key, value);
-    }
-
-    public double getPartnerStd(String key) {
-        return this.partnerStd.get(key);
-    }
-
-    public void setPartnerStd(String key, double value) {
-        this.partnerStd.put(key, value);
-    }
-
-    public void releaseStats() {
-        this.stats.release();
+    public List<T> getPartnerFeatures() {
+        return this.partnerChunks;
     }
 }

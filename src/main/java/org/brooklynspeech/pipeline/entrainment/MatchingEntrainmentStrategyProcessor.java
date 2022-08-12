@@ -2,27 +2,30 @@ package org.brooklynspeech.pipeline.entrainment;
 
 import java.util.List;
 
-import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Conversation;
-import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.core.PassthroughProcessor;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.FeatureChunk;
+import org.brooklynspeech.pipeline.data.FeatureConversation;
 
-public class MatchingEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> {
+public class MatchingEntrainmentStrategyProcessor<ChunkType extends FeatureChunk, ConversationType extends FeatureConversation<ChunkType>>
+        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     @Override
-    public Chunk doProcess(Chunk ourFeatures) {
-        Conversation context = ourFeatures.getContext();
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> ourFeatures) {
+        ConversationType conversation = ourFeatures.conversation;
+        ChunkType chunk = ourFeatures.chunk;
 
-        List<Chunk> partnerFeatures = context.getPartnerFeatures();
-        Chunk lastPartnerFeatures = partnerFeatures.get(partnerFeatures.size() - 1);
+        List<ChunkType> partnerFeatures = conversation.getPartnerFeatures();
+        ChunkType lastPartnerFeatures = partnerFeatures.get(partnerFeatures.size() - 1);
 
-        for (String key : Chunk.featureKeys) {
+        for (String key : FeatureChunk.featureKeys) {
             double partnerFeatureVal = lastPartnerFeatures.getFeature(key);
-            double partnerMean = context.getPartnerMean(key);
-            double partnerStd = context.getPartnerStd(key);
+            double partnerMean = conversation.getPartnerMean(key);
+            double partnerStd = conversation.getPartnerStd(key);
 
             double ourFeatureNorm = (partnerFeatureVal - partnerMean) / partnerStd;
 
-            ourFeatures.setNormalizedFeature(key, ourFeatureNorm);
+            chunk.setNormalizedFeature(key, ourFeatureNorm);
             System.out.println("Entrained " + key + ": " + ourFeatureNorm);
         }
 

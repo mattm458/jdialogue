@@ -1,17 +1,18 @@
 package org.brooklynspeech.pipeline;
 
-import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.core.PassthroughProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
 
-public class ContextCommitProcessor extends Processor<Chunk, Chunk> {
+public class ContextCommitProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     @Override
-    public Chunk doProcess(Chunk features) throws InterruptedException {
-        Conversation context = features.getContext();
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) throws InterruptedException {
+        ConversationType conversation = message.conversation;
+        conversation.commitFeatures(message.chunk);
 
-        context.commitFeatures(features);
-
-        return features;
+        return message;
     }
 }

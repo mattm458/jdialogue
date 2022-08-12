@@ -6,16 +6,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.brooklynspeech.pipeline.core.Source;
-import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
 
-public class SocketTextSource extends Source<Chunk> {
+public class SocketTextSource<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
+        extends Source<ChunkMessage<ChunkType, ConversationType>> {
 
-    private final Conversation context;
+    private final Class<ChunkType> C;
+    private final ConversationType conversation;
     private final int port;
 
-    public SocketTextSource(Conversation context, int port) {
-        this.context = context;
+    public SocketTextSource(Class<ChunkType> C, ConversationType conversation, int port) {
+        this.C = C;
+        this.conversation = conversation;
         this.port = port;
     }
 
@@ -31,10 +35,16 @@ public class SocketTextSource extends Source<Chunk> {
 
             while (!Thread.currentThread().isInterrupted()) {
                 String text = (String) stream.readObject();
-                this.outQueue.add(new Chunk(this.context, Chunk.Speaker.us, text));
+
+                ChunkType chunk = C.getDeclaredConstructor().newInstance();
+                chunk.setSpeaker(Chunk.Speaker.us);
+                chunk.setTranscript(text);
+
+                this.outQueue.add(new ChunkMessage<>(chunk, this.conversation));
 
             }
         } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
 
         if (serverSocket != null) {

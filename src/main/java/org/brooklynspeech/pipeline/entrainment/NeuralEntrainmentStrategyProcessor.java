@@ -1,12 +1,15 @@
 package org.brooklynspeech.pipeline.entrainment;
 
-import org.brooklynspeech.pipeline.core.Processor;
+import org.brooklynspeech.pipeline.core.PassthroughProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
-public class NeuralEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> {
+public class NeuralEntrainmentStrategyProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     private final Module model;
 
@@ -129,7 +132,9 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> 
     }
 
     @Override
-    public Chunk doProcess(Chunk features) {
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+        ChunkType chunk = message.chunk;
+
         final int batchSize = 1;
         final int predIdxsSize = 1;
         final int textSize = 100;
@@ -142,7 +147,7 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> 
         final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers,
                 this.featureEncoderHiddenDim);
         final IValue decoderHidden = getHidden(batchSize, this.decoderLayers, this.decoderHiddenDim);
-        final IValue speaker = getSpeaker(batchSize, features.getSpeaker());
+        final IValue speaker = getSpeaker(batchSize, chunk.getSpeaker());
         final IValue predIdxs = getPredIdxs(batchSize, predIdxsSize);
         final IValue embeddingInput = getEmbedding(batchSize, textSize, this.embeddingDim);
         final IValue embeddingLen = getEmbeddingLen(batchSize);
@@ -155,6 +160,6 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> 
                 embeddingLen,
                 predEmbeddingInput, predEmbeddingLen);
 
-        return features;
+        return message;
     }
 }

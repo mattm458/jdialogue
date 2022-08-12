@@ -1,68 +1,34 @@
 package org.brooklynspeech.pipeline.data;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Chunk {
-
     public enum Speaker {
         us, partner
     }
 
-    public static String[] featureKeys = new String[] {
-            "pitch_mean", "pitch_range", "intensity_mean", "jitter", "shimmer", "nhr", "rate"
-    };
-
-    private final Map<String, Double> rawFeatures = new HashMap<>();
-    private final Map<String, Double> normFeatures = new HashMap<>();
-
-    private final Conversation context;
-    private final Speaker speaker;
-    private final String transcript;
+    private Speaker speaker;
+    private String transcript;
 
     private List<double[]> embeddings;
 
     private byte[] wavData;
     private String wavPath;
 
-    public Chunk(Conversation context, Speaker speaker, String transcript) {
-        this.context = context;
-        this.speaker = speaker;
-        this.transcript = transcript;
-    }
-
-    public Chunk(Conversation context, Speaker speaker, String transcript, byte[] wavData) {
-        this(context, speaker, transcript);
-        this.wavData = wavData;
-    }
-
-    public Double getFeature(String key) {
-        return this.rawFeatures.get(key);
-    }
-
-    public void setFeature(String key, double value) {
-        this.rawFeatures.put(key, value);
-    }
-
-    public Double getNormalizedFeature(String key) {
-        return this.normFeatures.get(key);
-    }
-
-    public void setNormalizedFeature(String key, double value) {
-        this.normFeatures.put(key, value);
-    }
-
-    public Conversation getContext() {
-        return this.context;
-    }
-
     public Speaker getSpeaker() {
         return this.speaker;
     }
 
+    public void setSpeaker(Speaker speaker) {
+        this.speaker = speaker;
+    }
+
     public String getTranscript() {
         return this.transcript;
+    }
+
+    public void setTranscript(String transcript) {
+        this.transcript = transcript;
     }
 
     public List<double[]> getEmbeddings() {

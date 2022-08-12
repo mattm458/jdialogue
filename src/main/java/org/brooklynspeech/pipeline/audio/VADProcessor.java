@@ -3,19 +3,24 @@ package org.brooklynspeech.pipeline.audio;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import org.brooklynspeech.pipeline.core.Processor;
+import org.brooklynspeech.pipeline.core.PassthroughProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
 
 import com.orctom.vad4j.VAD;
 
-public class VADProcessor extends Processor<Chunk, Chunk> {
+public class VADProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     private final VAD vad = new VAD();
     private static final int SIZE = 1024 * 4;
 
     @Override
-    public Chunk doProcess(Chunk features) {
-        byte[] wavData = features.getWavData();
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+        ChunkType chunk = message.chunk;
+
+        byte[] wavData = chunk.getWavData();
 
         ByteArrayInputStream stream = new ByteArrayInputStream(wavData);
 
@@ -41,10 +46,10 @@ public class VADProcessor extends Processor<Chunk, Chunk> {
         if (start > 0) {
 
             byte[] trimmed = Arrays.copyOfRange(wavData, start, wavData.length);
-            features.setWavData(trimmed);
+            chunk.setWavData(trimmed);
         }
 
-        return features;
+        return message;
     }
 
 }

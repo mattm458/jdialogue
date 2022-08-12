@@ -4,8 +4,9 @@ import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.pipeline.asr.VoskProcessor;
 import org.brooklynspeech.pipeline.core.Pipeline;
-import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.source.SocketSource;
 
 public class ASRPipeline {
@@ -14,10 +15,11 @@ public class ASRPipeline {
     protected static final AudioFormat FORMAT = new AudioFormat(16000, 16, 1, true, false);
 
     public static void main(String[] args) throws Exception {
-        final Conversation context = new Conversation(0);
+        final Conversation<Chunk> context = new Conversation<Chunk>(0);
 
-        final Pipeline<Chunk> relayPipeline = new Pipeline<>(new SocketSource(SOURCE_PORT, BUFFER_SIZE))
-                .addProcessor(new VoskProcessor("vosk-model-small-en-us-0.15", FORMAT, context));
+        final Pipeline<ChunkMessage<Chunk, Conversation<Chunk>>> relayPipeline;
+        relayPipeline = new Pipeline<>(new SocketSource(SOURCE_PORT, BUFFER_SIZE))
+                .addProcessor(new VoskProcessor<>(Chunk.class, "vosk-model-small-en-us-0.15", FORMAT, context));
 
         relayPipeline.start();
     }
