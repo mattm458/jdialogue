@@ -11,13 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Chunk;
 
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 
-public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
+public class EmbeddingFeatureProcessor extends Processor<Chunk, Chunk> {
 
     private static HashMap<String, double[]> embeddings = null;
     private static double[] zeros;
@@ -72,7 +72,7 @@ public class EmbeddingFeatureProcessor extends Processor<Features, Features> {
     }
 
     @Override
-    public Features doProcess(Features features) {
+    public Chunk doProcess(Chunk features) {
         List<double[]> embeddingsList = EmbeddingFeatureProcessor.getEmbeddings(features.getTranscript());
         features.setEmbeddings(embeddingsList);
 

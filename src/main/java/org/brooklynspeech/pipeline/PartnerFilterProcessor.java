@@ -1,13 +1,13 @@
 package org.brooklynspeech.pipeline;
 
 import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Chunk;
 
-public class PartnerFilterProcessor extends Processor<Features, Features> {
+public class PartnerFilterProcessor extends Processor<Chunk, Chunk> {
 
     @Override
-    public Features doProcess(Features features) {
-        if (features.getSpeaker() == Features.Speaker.partner) {
+    public Chunk doProcess(Chunk features) {
+        if (features.getSpeaker() == Chunk.Speaker.partner) {
             return null;
         }
 

@@ -3,19 +3,19 @@ package org.brooklynspeech.pipeline.entrainment;
 import java.util.List;
 
 import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Context;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.Chunk;
 
-public class MatchingEntrainmentStrategyProcessor extends Processor<Features, Features> {
+public class MatchingEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> {
 
     @Override
-    public Features doProcess(Features ourFeatures) {
-        Context context = ourFeatures.getContext();
+    public Chunk doProcess(Chunk ourFeatures) {
+        Conversation context = ourFeatures.getContext();
 
-        List<Features> partnerFeatures = context.getPartnerFeatures();
-        Features lastPartnerFeatures = partnerFeatures.get(partnerFeatures.size() - 1);
+        List<Chunk> partnerFeatures = context.getPartnerFeatures();
+        Chunk lastPartnerFeatures = partnerFeatures.get(partnerFeatures.size() - 1);
 
-        for (String key : Features.featureKeys) {
+        for (String key : Chunk.featureKeys) {
             double partnerFeatureVal = lastPartnerFeatures.getFeature(key);
             double partnerMean = context.getPartnerMean(key);
             double partnerStd = context.getPartnerStd(key);

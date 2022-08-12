@@ -6,15 +6,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.brooklynspeech.pipeline.core.Source;
-import org.brooklynspeech.pipeline.data.Context;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.Chunk;
 
-public class SocketTextSource extends Source<Features> {
+public class SocketTextSource extends Source<Chunk> {
 
-    private final Context context;
+    private final Conversation context;
     private final int port;
 
-    public SocketTextSource(Context context, int port) {
+    public SocketTextSource(Conversation context, int port) {
         this.context = context;
         this.port = port;
     }
@@ -31,7 +31,7 @@ public class SocketTextSource extends Source<Features> {
 
             while (!Thread.currentThread().isInterrupted()) {
                 String text = (String) stream.readObject();
-                this.outQueue.add(new Features(this.context, Features.Speaker.us, text));
+                this.outQueue.add(new Chunk(this.context, Chunk.Speaker.us, text));
 
             }
         } catch (Exception e) {

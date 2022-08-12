@@ -11,9 +11,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
 import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Chunk;
 
-public class FileSaverProcessor extends Processor<Features, Features> {
+public class FileSaverProcessor extends Processor<Chunk, Chunk> {
 
     private final AudioFormat format;
 
@@ -22,7 +22,7 @@ public class FileSaverProcessor extends Processor<Features, Features> {
     }
 
     @Override
-    public Features doProcess(Features features) {
+    public Chunk doProcess(Chunk features) {
         Path wavPath;
 
         byte[] wavData = features.getWavData();

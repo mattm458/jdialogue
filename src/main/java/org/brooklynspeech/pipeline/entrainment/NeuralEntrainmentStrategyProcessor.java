@@ -1,12 +1,12 @@
 package org.brooklynspeech.pipeline.entrainment;
 
 import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Chunk;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
-public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Features> {
+public class NeuralEntrainmentStrategyProcessor extends Processor<Chunk, Chunk> {
 
     private final Module model;
 
@@ -51,7 +51,7 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         final IValue featureEncoderHidden = getHidden(batchSize, this.featureEncoderLayers,
                 this.featureEncoderHiddenDim);
         final IValue decoderHidden = getHidden(batchSize, this.decoderLayers, this.decoderHiddenDim);
-        final IValue speaker = getSpeaker(batchSize, Features.Speaker.us);
+        final IValue speaker = getSpeaker(batchSize, Chunk.Speaker.us);
         final IValue predIdxs = getPredIdxs(batchSize, 1);
         final IValue embeddingInput = getEmbedding(batchSize, 100, this.embeddingDim);
         final IValue embeddingLen = getEmbeddingLen(batchSize);
@@ -97,10 +97,10 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
         return IValue.listFrom(hidden);
     }
 
-    private static IValue getSpeaker(int batchSize, Features.Speaker speaker) {
+    private static IValue getSpeaker(int batchSize, Chunk.Speaker speaker) {
         final float[] speaker_val = new float[batchSize * 2];
 
-        if (speaker == Features.Speaker.partner) {
+        if (speaker == Chunk.Speaker.partner) {
             speaker_val[0] = 1.0f;
         } else {
             speaker_val[1] = 1.0f;
@@ -129,7 +129,7 @@ public class NeuralEntrainmentStrategyProcessor extends Processor<Features, Feat
     }
 
     @Override
-    public Features doProcess(Features features) {
+    public Chunk doProcess(Chunk features) {
         final int batchSize = 1;
         final int predIdxsSize = 1;
         final int textSize = 100;

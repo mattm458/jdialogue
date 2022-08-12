@@ -4,17 +4,17 @@ import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
 import org.brooklynspeech.pipeline.core.Processor;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Chunk;
 
 import com.orctom.vad4j.VAD;
 
-public class VADProcessor extends Processor<Features, Features> {
+public class VADProcessor extends Processor<Chunk, Chunk> {
 
     private final VAD vad = new VAD();
     private static final int SIZE = 1024 * 4;
 
     @Override
-    public Features doProcess(Features features) {
+    public Chunk doProcess(Chunk features) {
         byte[] wavData = features.getWavData();
 
         ByteArrayInputStream stream = new ByteArrayInputStream(wavData);

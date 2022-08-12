@@ -1,16 +1,16 @@
 package org.brooklynspeech.pipeline.source;
 
 import org.brooklynspeech.pipeline.core.Source;
-import org.brooklynspeech.pipeline.data.Context;
-import org.brooklynspeech.pipeline.data.Features;
+import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.Chunk;
 
-public class DummyTextSource extends Source<Features> {
+public class DummyTextSource extends Source<Chunk> {
 
-    private final Context context;
+    private final Conversation context;
     private final String text;
     private final long interval;
 
-    public DummyTextSource(Context context, String text, long interval) {
+    public DummyTextSource(Conversation context, String text, long interval) {
         super();
 
         this.context = context;
@@ -18,7 +18,7 @@ public class DummyTextSource extends Source<Features> {
         this.interval = interval;
     }
 
-    public DummyTextSource(Context context) {
+    public DummyTextSource(Conversation context) {
         this(context, "testing testing one two three", 5);
     }
 
@@ -27,7 +27,7 @@ public class DummyTextSource extends Source<Features> {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 Thread.sleep(interval * 1000);
-                this.outQueue.add(new Features(this.context, Features.Speaker.us, this.text));
+                this.outQueue.add(new Chunk(this.context, Chunk.Speaker.us, this.text));
 
             }
         } catch (InterruptedException e) {

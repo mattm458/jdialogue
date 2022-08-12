@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Features {
+public class Chunk {
 
     public enum Speaker {
         us, partner
@@ -17,7 +17,7 @@ public class Features {
     private final Map<String, Double> rawFeatures = new HashMap<>();
     private final Map<String, Double> normFeatures = new HashMap<>();
 
-    private final Context context;
+    private final Conversation context;
     private final Speaker speaker;
     private final String transcript;
 
@@ -26,13 +26,13 @@ public class Features {
     private byte[] wavData;
     private String wavPath;
 
-    public Features(Context context, Speaker speaker, String transcript) {
+    public Chunk(Conversation context, Speaker speaker, String transcript) {
         this.context = context;
         this.speaker = speaker;
         this.transcript = transcript;
     }
 
-    public Features(Context context, Speaker speaker, String transcript, byte[] wavData) {
+    public Chunk(Conversation context, Speaker speaker, String transcript, byte[] wavData) {
         this(context, speaker, transcript);
         this.wavData = wavData;
     }
@@ -53,7 +53,7 @@ public class Features {
         this.normFeatures.put(key, value);
     }
 
-    public Context getContext() {
+    public Conversation getContext() {
         return this.context;
     }
 

@@ -6,13 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class Context {
+public class Conversation {
 
     private final int conversationId;
 
-    private final LinkedList<Features> features = new LinkedList<>();
-    private final LinkedList<Features> partnerFeatures = new LinkedList<>();
-    private final LinkedList<Features> usFeatures = new LinkedList<>();
+    private final LinkedList<Chunk> features = new LinkedList<>();
+    private final LinkedList<Chunk> partnerFeatures = new LinkedList<>();
+    private final LinkedList<Chunk> usFeatures = new LinkedList<>();
 
     private final HashMap<String, Double> usMean = new HashMap<>();
     private final HashMap<String, Double> usStd = new HashMap<>();
@@ -22,7 +22,7 @@ public class Context {
     private final Semaphore conversation = new Semaphore(1);
     private final Semaphore stats = new Semaphore(1);
 
-    public Context(int conversationId) {
+    public Conversation(int conversationId) {
         this.conversationId = conversationId;
     }
 
@@ -38,12 +38,12 @@ public class Context {
         this.conversation.release();
     }
 
-    public void commitFeatures(Features f) throws InterruptedException {
+    public void commitFeatures(Chunk f) throws InterruptedException {
         this.conversation.acquire();
 
         this.features.add(f);
 
-        if (f.getSpeaker() == Features.Speaker.partner) {
+        if (f.getSpeaker() == Chunk.Speaker.partner) {
             this.partnerFeatures.add(f);
         } else {
             this.usFeatures.add(f);
@@ -52,15 +52,15 @@ public class Context {
         this.conversation.release();
     }
 
-    public Iterator<Features> getFeaturesIterator() {
+    public Iterator<Chunk> getFeaturesIterator() {
         return this.features.iterator();
     }
 
-    public Iterator<Features> getPartnerFeaturesIterator() {
+    public Iterator<Chunk> getPartnerFeaturesIterator() {
         return this.partnerFeatures.iterator();
     }
 
-    public List<Features> getPartnerFeatures() {
+    public List<Chunk> getPartnerFeatures() {
         return this.partnerFeatures;
     }
 

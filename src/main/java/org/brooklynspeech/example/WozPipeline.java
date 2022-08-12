@@ -2,7 +2,7 @@ package org.brooklynspeech.example;
 
 import org.brooklynspeech.pipeline.audio.WavDataUnwrapper;
 import org.brooklynspeech.pipeline.core.Pipeline;
-import org.brooklynspeech.pipeline.data.Context;
+import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.sink.SocketSink;
 import org.brooklynspeech.pipeline.source.AudioFileSource;
 import org.brooklynspeech.pipeline.source.SocketTextSource;
@@ -15,7 +15,7 @@ public class WozPipeline {
     protected static final int BUFFER_SIZE = 1024;
 
     public static void main(String[] args) throws Exception {
-        Context context = new Context(0);
+        Conversation context = new Conversation(0);
 
         final Pipeline<byte[]> audioPipeline = new Pipeline<>(new AudioFileSource("wav/GAME_speakerB.wav", BUFFER_SIZE))
                 .setSink(new SocketSink(AUDIO_SINK_PORT));
