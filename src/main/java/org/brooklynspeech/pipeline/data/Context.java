@@ -6,8 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import org.pytorch.IValue;
-
 public class Context {
 
     private final int conversationId;
@@ -20,8 +18,6 @@ public class Context {
     private final HashMap<String, Double> usStd = new HashMap<>();
     private final HashMap<String, Double> partnerMean = new HashMap<>();
     private final HashMap<String, Double> partnerStd = new HashMap<>();
-
-    private final HashMap<String, IValue> torchFeatures = new HashMap<>();
 
     private final Semaphore conversation = new Semaphore(1);
     private final Semaphore stats = new Semaphore(1);
@@ -106,13 +102,5 @@ public class Context {
 
     public void releaseStats() {
         this.stats.release();
-    }
-
-    public IValue getTorchFeature(String key) {
-        return this.torchFeatures.get(key);
-    }
-
-    public void setTorchFeature(String key, IValue value) {
-        this.torchFeatures.put(key, value);
     }
 }
