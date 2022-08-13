@@ -4,13 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.brooklynspeech.pipeline.core.PassthroughProcessor;
+import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.data.FeatureChunk;
 
 public class PraatFeatureProcessor<ChunkType extends FeatureChunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
+        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     @Override
     public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {

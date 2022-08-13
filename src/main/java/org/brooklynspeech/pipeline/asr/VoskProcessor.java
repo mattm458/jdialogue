@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.audio.sink.ArraySink;
-import org.brooklynspeech.pipeline.core.Processor;
+import org.brooklynspeech.pipeline.core.StreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.Conversation;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class VoskProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends Processor<byte[], ChunkMessage<ChunkType, ConversationType>> {
+        extends StreamProcessor<byte[], ChunkMessage<ChunkType, ConversationType>> {
 
     private final Class<ChunkType> C;
 

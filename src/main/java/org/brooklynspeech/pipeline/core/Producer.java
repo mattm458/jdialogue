@@ -1,12 +1,12 @@
 package org.brooklynspeech.pipeline.core;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public abstract class Producer<OutType> extends Thread {
-    protected final BlockingQueue<OutType> outQueue = new LinkedBlockingQueue<>();
+    protected final BlockingDeque<OutType> outQueue = new LinkedBlockingDeque<>();
 
-    public BlockingQueue<OutType> getOutQueue() {
+    public BlockingDeque<OutType> getOutQueue() {
         return this.outQueue;
     }
 }

@@ -1,6 +1,6 @@
 package org.brooklynspeech.pipeline.tts;
 
-import org.brooklynspeech.pipeline.core.PassthroughProcessor;
+import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.Conversation;
@@ -11,7 +11,7 @@ import com.sun.speech.freetts.VoiceManager;
 import com.sun.speech.freetts.util.Utilities;
 
 public class FreeTTSProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
+        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     private final Voice voice;
     private final BufferAudioPlayer audioPlayer;

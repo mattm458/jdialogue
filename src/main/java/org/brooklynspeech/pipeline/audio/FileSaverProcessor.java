@@ -10,13 +10,13 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import org.brooklynspeech.pipeline.core.PassthroughProcessor;
+import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.Conversation;
 
 public class FileSaverProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
+        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     private final AudioFormat format;
 

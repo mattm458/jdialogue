@@ -3,7 +3,7 @@ package org.brooklynspeech.pipeline.audio;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import org.brooklynspeech.pipeline.core.PassthroughProcessor;
+import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.Conversation;
@@ -11,7 +11,7 @@ import org.brooklynspeech.pipeline.data.Conversation;
 import com.orctom.vad4j.VAD;
 
 public class VADProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughProcessor<ChunkMessage<ChunkType, ConversationType>> {
+        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     private final VAD vad = new VAD();
     private static final int SIZE = 1024 * 4;
