@@ -45,6 +45,10 @@ public class Conversation<T extends Chunk> {
         this.conversation.release();
     }
 
+    public int getFeaturesSize() {
+        return this.chunks.size();
+    }
+
     public Iterator<T> getFeaturesIterator() {
         return this.chunks.iterator();
     }

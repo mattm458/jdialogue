@@ -8,4 +8,9 @@ public class ChunkMessage<ChunkType extends Chunk, ConversationType extends Conv
         this.chunk = chunk;
         this.conversation = conversation;
     }
+
+    public int getConversationId() {
+        return this.conversation.getConversationId();
+    }
+
 }

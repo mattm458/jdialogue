@@ -8,22 +8,22 @@ public class FeatureChunk extends Chunk {
             "pitch_mean", "pitch_range", "intensity_mean", "jitter", "shimmer", "nhr", "rate"
     };
 
-    private final Map<String, Double> rawFeatures = new HashMap<>();
-    private final Map<String, Double> normFeatures = new HashMap<>();
+    private final Map<String, Float> rawFeatures = new HashMap<>();
+    private final Map<String, Float> normFeatures = new HashMap<>();
 
-    public Double getFeature(String key) {
+    public float getFeature(String key) {
         return this.rawFeatures.get(key);
     }
 
-    public void setFeature(String key, double value) {
+    public void setFeature(String key, float value) {
         this.rawFeatures.put(key, value);
     }
 
-    public Double getNormalizedFeature(String key) {
+    public float getNormalizedFeature(String key) {
         return this.normFeatures.get(key);
     }
 
-    public void setNormalizedFeature(String key, double value) {
+    public void setNormalizedFeature(String key, float value) {
         this.normFeatures.put(key, value);
     }
 }

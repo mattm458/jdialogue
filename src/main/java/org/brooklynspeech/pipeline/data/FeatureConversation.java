@@ -5,10 +5,10 @@ import java.util.concurrent.Semaphore;
 
 public class FeatureConversation<T extends FeatureChunk> extends Conversation<T> {
 
-    private final HashMap<String, Double> usMean = new HashMap<>();
-    private final HashMap<String, Double> usStd = new HashMap<>();
-    private final HashMap<String, Double> partnerMean = new HashMap<>();
-    private final HashMap<String, Double> partnerStd = new HashMap<>();
+    private final HashMap<String, Float> usMean = new HashMap<>();
+    private final HashMap<String, Float> usStd = new HashMap<>();
+    private final HashMap<String, Float> partnerMean = new HashMap<>();
+    private final HashMap<String, Float> partnerStd = new HashMap<>();
 
     private final Semaphore stats = new Semaphore(1);
 
@@ -20,35 +20,35 @@ public class FeatureConversation<T extends FeatureChunk> extends Conversation<T>
         this.stats.acquire();
     }
 
-    public double getUsMean(String key) {
+    public float getUsMean(String key) {
         return this.usMean.get(key);
     }
 
-    public void setUsMean(String key, double value) {
+    public void setUsMean(String key, float value) {
         this.usMean.put(key, value);
     }
 
-    public double getUsStd(String key) {
+    public float getUsStd(String key) {
         return this.usStd.get(key);
     }
 
-    public void setUsStd(String key, double value) {
+    public void setUsStd(String key, float value) {
         this.usStd.put(key, value);
     }
 
-    public double getPartnerMean(String key) {
+    public float getPartnerMean(String key) {
         return this.partnerMean.get(key);
     }
 
-    public void setPartnerMean(String key, double value) {
+    public void setPartnerMean(String key, float value) {
         this.partnerMean.put(key, value);
     }
 
-    public double getPartnerStd(String key) {
+    public float getPartnerStd(String key) {
         return this.partnerStd.get(key);
     }
 
-    public void setPartnerStd(String key, double value) {
+    public void setPartnerStd(String key, float value) {
         this.partnerStd.put(key, value);
     }
 
