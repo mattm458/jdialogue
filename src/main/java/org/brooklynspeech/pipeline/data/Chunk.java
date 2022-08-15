@@ -1,7 +1,5 @@
 package org.brooklynspeech.pipeline.data;
 
-import java.util.List;
-
 public class Chunk {
     public enum Speaker {
         us, partner
@@ -10,7 +8,7 @@ public class Chunk {
     private Speaker speaker;
     private String transcript;
 
-    private List<double[]> embeddings;
+    float[][] embeddings;
 
     private byte[] wavData;
     private String wavPath;
@@ -31,11 +29,11 @@ public class Chunk {
         this.transcript = transcript;
     }
 
-    public List<double[]> getEmbeddings() {
+    public float[][] getEmbeddings() {
         return this.embeddings;
     }
 
-    public void setEmbeddings(List<double[]> embeddings) {
+    public void setEmbeddings(float[][] embeddings) {
         this.embeddings = embeddings;
     }
 
