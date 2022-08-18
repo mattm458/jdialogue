@@ -38,14 +38,8 @@ public class NeuralEntrainmentStrategyProcessor extends
         this.embeddingDim = embeddingDim;
     }
 
-    private static IValue chunkFeaturesToIValue(final NeuralEntrainmentChunk chunk) {
+    private static IValue chunkFeaturesToIValue(final float[] features) {
         final int featureDim = NeuralEntrainmentChunk.featureKeys.length;
-
-        final float features[] = new float[featureDim];
-        for (int i = 0; i < featureDim; i++) {
-            String featureKey = NeuralEntrainmentChunk.featureKeys[i];
-            features[i] = chunk.getNormalizedFeature(featureKey, 0.0f);
-        }
 
         return IValue.from(Tensor.fromBlob(features, new long[] { 1, featureDim }));
     }
@@ -87,6 +81,28 @@ public class NeuralEntrainmentStrategyProcessor extends
         }
 
         return IValue.listFrom(layers);
+    }
+
+    private static float[][][] expandHidden(IValue hidden, final int numLayers, final int hiddenDim) {
+        float[][][] expandedHidden = new float[numLayers][2][hiddenDim];
+
+        IValue[] layers = hidden.toList();
+
+        for (int i = 0; i < numLayers; i++) {
+            IValue layer = layers[i];
+            IValue[] lstmValues = layer.toTuple();
+
+            for (int j = 0; j < 2; j++) {
+                IValue h = lstmValues[j];
+                float[] hVal = h.toTensor().getDataAsFloatArray();
+
+                for (int k = 0; k < hiddenDim; k++) {
+                    expandedHidden[i][j][k] = hVal[k];
+                }
+            }
+        }
+
+        return expandedHidden;
     }
 
     private static IValue speakerToIValue(Speaker speaker) {
@@ -163,7 +179,13 @@ public class NeuralEntrainmentStrategyProcessor extends
             history = new float[1][this.encodedDim];
         }
 
-        IValue featureInput = chunkFeaturesToIValue(messages.chunk);
+        float[] features = new float[NeuralEntrainmentChunk.featureKeys.length];
+        for (int i = 0; i < NeuralEntrainmentChunk.featureKeys.length; i++) {
+            features[i] = chunk.getNormalizedFeature(NeuralEntrainmentChunk.featureKeys[i], 0.0f);
+        }
+
+        IValue featureInput = chunkFeaturesToIValue(features);
+
         IValue embeddingInput = getEmbeddingIValue(chunk, this.embeddingDim);
         IValue embeddingLen = getEmbeddingLenIValue(chunk);
         IValue speaker = speakerToIValue(chunk.getSpeaker());
@@ -202,22 +224,65 @@ public class NeuralEntrainmentStrategyProcessor extends
                 idx // idx: Tensor
         );
 
-        // Extract the history and save it in the chunk
-        float[][] expandedHistory = expandHistory(featureHistory.toTensor().getDataAsFloatArray(), history.length,
-                this.encodedDim);
-        conversation.setEncodedHistory(expandedHistory);
-
         if (chunk.getSpeaker() == NeuralEntrainmentChunk.Speaker.partner) {
-            // If this was a partner utterance, we have nothing else to do.
+            // If this was a partner utterance, we can expand the history and hidden tensors
+            // to save for another turn.
+            float[][] expandedHistory = expandHistory(featureHistory.toTensor().getDataAsFloatArray(), history.length,
+                    this.encodedDim);
+            conversation.setEncodedHistory(expandedHistory);
+
+            float[][][] expandedFeatureEncoderHidden = expandHidden(
+                    featureEncoderHidden, this.numFeatureEncoderLayers,
+                    this.featureEncoderHiddenDim);
+            conversation.setFeatureEncoderHidden(expandedFeatureEncoderHidden);
+
         } else {
             /*
              * If this was our utterance, we have to carry out these additional steps:
              * 
              * 1. Unpack the results from the output tensor.
              * 2. Save the results as normalized features in the chunk.
+             * 3. Unpack and save the decoder hidden tensors
              * 3. Create a new set of input tensors and process the features again
              * to save them in the encoded history.
              */
+            float[] resultsExpanded = results.toTuple()[0].toTensor().getDataAsFloatArray();
+            for (int i = 0; i < NeuralEntrainmentChunk.featureKeys.length; i++) {
+                chunk.setNormalizedFeature(NeuralEntrainmentChunk.featureKeys[i], resultsExpanded[i]);
+            }
+            featureInput = chunkFeaturesToIValue(resultsExpanded);
+
+            float[][][] expandedDecoderHidden = expandHidden(
+                    decoderHidden, this.numDecoderLayers,
+                    this.decoderHiddenDim);
+            conversation.setDecoderHidden(expandedDecoderHidden);
+            decoderHidden = hiddenToIValue(expandedDecoderHidden, this.numDecoderLayers, this.decoderHiddenDim);
+            featureEncodeMask = IValue.from(Tensor.fromBlob(new byte[] { 1 }, new long[] { 1 }));
+            predictMask = IValue.from(Tensor.fromBlob(new byte[] { 0 }, new long[] { 1 }));
+
+            results = this.model.forward(
+                    featureInput, // acoutsic_prosodic_features: Tensor
+                    embeddingInput, // embeddings: Tensor
+                    embeddingLen, // embeddings_len: Tensor
+                    speaker, // speakers: Tensor
+                    featureEncoderHidden, // encoder_hidden: List[Tuple[Tensor, Tensor]]
+                    decoderHidden, // decoder_hidden: List[Tuple[Tensor, Tensor]]
+                    featureHistory, // history: Tensor
+                    batchMask, // batch_mask: Tensor
+                    embeddingsEncodeMask, // embeddings_encode_mask: Tensor
+                    featureEncodeMask, // feature_encode_mask: Tensor
+                    predictMask, // predict_mask: Tensor
+                    idx // idx: Tensor
+            );
+
+            float[][] expandedHistory = expandHistory(featureHistory.toTensor().getDataAsFloatArray(), history.length,
+                    this.encodedDim);
+            conversation.setEncodedHistory(expandedHistory);
+            
+            float[][][] expandedFeatureEncoderHidden = expandHidden(
+                    featureEncoderHidden, this.numFeatureEncoderLayers,
+                    this.featureEncoderHiddenDim);
+            conversation.setFeatureEncoderHidden(expandedFeatureEncoderHidden);
         }
 
         return messages;
