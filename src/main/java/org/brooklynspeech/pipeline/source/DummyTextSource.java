@@ -37,7 +37,6 @@ public class DummyTextSource<ChunkType extends Chunk, ConversationType extends C
                 chunk.setTranscript(this.text);
 
                 this.outQueue.add(new ChunkMessage<>(chunk, this.context));
-
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);

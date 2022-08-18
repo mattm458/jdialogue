@@ -31,7 +31,7 @@ public class Conversation<T extends Chunk> {
         this.conversation.release();
     }
 
-    public void commitFeatures(T f) throws InterruptedException {
+    public void commitChunk(T f) throws InterruptedException {
         this.conversation.acquire();
 
         this.chunks.add(f);

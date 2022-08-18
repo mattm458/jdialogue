@@ -10,9 +10,13 @@ public class FeatureChunk extends Chunk {
 
     private final Map<String, Float> rawFeatures = new HashMap<>();
     private final Map<String, Float> normFeatures = new HashMap<>();
-
+    
     public float getFeature(String key) {
         return this.rawFeatures.get(key);
+    }
+
+    public float getFeature(String key, float value) {
+        return this.rawFeatures.getOrDefault(key, value);
     }
 
     public void setFeature(String key, float value) {
@@ -21,6 +25,10 @@ public class FeatureChunk extends Chunk {
 
     public float getNormalizedFeature(String key) {
         return this.normFeatures.get(key);
+    }
+
+    public float getNormalizedFeature(String key, float value) {
+        return this.normFeatures.getOrDefault(key, value);
     }
 
     public void setNormalizedFeature(String key, float value) {

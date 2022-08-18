@@ -10,16 +10,14 @@ import org.brooklynspeech.pipeline.data.Conversation;
 
 import com.orctom.vad4j.VAD;
 
-public class VADProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class VADProcessor<ChunkType extends Chunk>
+        extends PassthroughStreamProcessor<ChunkType> {
 
     private final VAD vad = new VAD();
     private static final int SIZE = 1024 * 4;
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
-        ChunkType chunk = message.chunk;
-
+    public ChunkType doProcess(ChunkType chunk) {
         byte[] wavData = chunk.getWavData();
 
         ByteArrayInputStream stream = new ByteArrayInputStream(wavData);
@@ -49,7 +47,7 @@ public class VADProcessor<ChunkType extends Chunk, ConversationType extends Conv
             chunk.setWavData(trimmed);
         }
 
-        return message;
+        return chunk;
     }
 
 }

@@ -2,6 +2,7 @@ package org.brooklynspeech.example;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.brooklynspeech.pipeline.ConversationWrapperProcessor;
 import org.brooklynspeech.pipeline.asr.VoskProcessor;
 import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.data.Chunk;
@@ -19,7 +20,8 @@ public class ASRPipeline {
 
         final Pipeline<ChunkMessage<Chunk, Conversation<Chunk>>> relayPipeline;
         relayPipeline = new Pipeline<>(new SocketSource(SOURCE_PORT, BUFFER_SIZE))
-                .addProcessor(new VoskProcessor<>(Chunk.class, "vosk-model-small-en-us-0.15", FORMAT, context));
+                .addProcessor(new VoskProcessor<>(Chunk.class, "vosk-model-small-en-us-0.15", FORMAT))
+                .addProcessor(new ConversationWrapperProcessor<>(context));
 
         relayPipeline.start();
     }

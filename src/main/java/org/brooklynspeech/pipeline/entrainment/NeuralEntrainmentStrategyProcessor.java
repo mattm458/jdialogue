@@ -1,5 +1,10 @@
 package org.brooklynspeech.pipeline.entrainment;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Semaphore;
+
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk.Speaker;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
@@ -17,12 +22,13 @@ public class NeuralEntrainmentStrategyProcessor extends
     private final int featureEncoderHiddenDim;
     private final int numDecoderLayers;
     private final int decoderHiddenDim;
+    private final int embeddingDim;
 
-    public NeuralEntrainmentStrategyProcessor(String modelPath, int encodedDim, int numFeatureEncoderLayers,
+    public NeuralEntrainmentStrategyProcessor(String modelPath, int encodedDim,
+            int numFeatureEncoderLayers,
             int featureEncoderHiddenDim,
-            int numDecoderLayers, int decoderHiddenDim) {
+            int numDecoderLayers, int decoderHiddenDim, int embeddingDim) {
         super();
-
         this.model = Module.load(modelPath);
 
         this.encodedDim = encodedDim;
@@ -30,6 +36,7 @@ public class NeuralEntrainmentStrategyProcessor extends
         this.featureEncoderHiddenDim = featureEncoderHiddenDim;
         this.numDecoderLayers = numDecoderLayers;
         this.decoderHiddenDim = decoderHiddenDim;
+        this.embeddingDim = embeddingDim;
     }
 
     private static IValue chunkFeaturesToIValue(final NeuralEntrainmentChunk chunk) {
@@ -38,7 +45,7 @@ public class NeuralEntrainmentStrategyProcessor extends
         final float features[] = new float[featureDim];
         for (int i = 0; i < featureDim; i++) {
             String featureKey = NeuralEntrainmentChunk.featureKeys[i];
-            features[i] = chunk.getNormalizedFeature(featureKey);
+            features[i] = chunk.getNormalizedFeature(featureKey, 0.0f);
         }
 
         return IValue.from(Tensor.fromBlob(features, new long[] { 1, featureDim }));
@@ -62,14 +69,7 @@ public class NeuralEntrainmentStrategyProcessor extends
             }
         }
 
-        return IValue.from(Tensor.fromBlob(historyFlattened, new long[] { 1, timesteps, encodedDim }));
-    }
-
-    private static IValue getHistoryMaskIValue(int length) {
-        byte[] mask = new byte[length];
-        mask[length - 1] = 1;
-
-        return IValue.from(Tensor.fromBlob(mask, new long[] { 1, length }));
+        return IValue.from(Tensor.fromBlob(historyFlattened, new long[] { 1, timesteps + 1, encodedDim }));
     }
 
     private static IValue hiddenToIValue(float[][][] hidden, final int numLayers, final int hiddenDim) {
@@ -104,19 +104,42 @@ public class NeuralEntrainmentStrategyProcessor extends
         }
     }
 
-    private static IValue embeddingsToIValue(float[][] embeddings) {
-        final int timesteps = embeddings.length;
-        final int embeddingsDim = embeddings[0].length;
+    private static IValue getEmbeddingIValue(NeuralEntrainmentChunk chunk, int embeddingDim) {
+        float[][] embeddings = chunk.getEmbeddings();
 
-        float[] embeddingsFlattened = new float[timesteps * embeddingsDim];
+        int embeddingIdx = 0;
+        float[] embeddingsFlattened = new float[embeddings.length * embeddingDim];
 
-        for (int timestep = 0; timestep < embeddings.length; timestep++) {
-            for (int i = 0; i < embeddingsDim; i++) {
-                embeddingsFlattened[(timestep * embeddingsDim) + i] = embeddings[timestep][i];
+        for (int i = 0; i < embeddings.length; i++) {
+            for (int j = 0; j < embeddingDim; j++) {
+                embeddingsFlattened[embeddingIdx] = embeddings[i][j];
+                embeddingIdx++;
             }
         }
 
-        return IValue.from(Tensor.fromBlob(embeddingsFlattened, new long[] { 1, timesteps, embeddingsDim }));
+        return IValue.from(Tensor.fromBlob(embeddingsFlattened, new long[] { 1, embeddings.length, embeddingDim }));
+    }
+
+    private static IValue getEmbeddingLenIValue(NeuralEntrainmentChunk chunk) {
+        float[][] embeddings = chunk.getEmbeddings();
+
+        return IValue.from(Tensor.fromBlob(new long[] { embeddings.length }, new long[] { 1 }));
+    }
+
+    private static List<NeuralEntrainmentChunk> getChunkHistory(NeuralEntrainmentChunk chunk,
+            NeuralEntrainmentConversation conversation) {
+        Iterator<NeuralEntrainmentChunk> iterator = conversation.getFeaturesIterator();
+
+        NeuralEntrainmentChunk next;
+        LinkedList<NeuralEntrainmentChunk> chunks = new LinkedList<>();
+
+        while (iterator.hasNext() && (next = iterator.next()) != chunk) {
+            chunks.add(next);
+        }
+
+        chunks.add(chunk);
+
+        return chunks;
     }
 
     @Override
@@ -126,26 +149,52 @@ public class NeuralEntrainmentStrategyProcessor extends
         NeuralEntrainmentChunk chunk = messages.chunk;
         NeuralEntrainmentConversation conversation = messages.conversation;
 
-        IValue timestep = IValue.from(0);
+        List<NeuralEntrainmentChunk> chunkHistory = getChunkHistory(chunk, conversation);
+
         IValue featureInput = chunkFeaturesToIValue(messages.chunk);
-        IValue featureHistory = historyToIValue(conversation.getEncodedHistory(), this.encodedDim);
-        IValue featureMask = getHistoryMaskIValue(conversation.getEncodedHistory().length + 1);
+        IValue embeddingInput = getEmbeddingIValue(chunk, this.embeddingDim);
+        IValue embeddingLen = getEmbeddingLenIValue(chunk);
+        IValue speaker = speakerToIValue(chunk.getSpeaker());
         IValue featureEncoderHidden = hiddenToIValue(conversation.getFeatureEncoderHidden(),
                 this.numFeatureEncoderLayers, this.featureEncoderHiddenDim);
         IValue decoderHidden = hiddenToIValue(conversation.getDecoderHidden(),
                 this.numDecoderLayers, this.decoderHiddenDim);
-        IValue speaker = speakerToIValue(chunk.getSpeaker());
-        IValue predIdxs = IValue.from(Tensor.fromBlob(new long[1], new long[] { 1 }));
-        IValue embeddingInput = null;
-        IValue embeddingLen = null;
-        IValue predEmbeddingInput = null;
-        IValue predEmbeddingLen = null;
+        IValue featureHistory = historyToIValue(conversation.getEncodedHistory(), this.encodedDim);
 
-        this.model.forward(timestep, featureInput,
-                featureHistory, featureMask,
-                featureEncoderHidden, decoderHidden, speaker, predIdxs, embeddingInput,
-                embeddingLen,
-                predEmbeddingInput, predEmbeddingLen);
+        IValue batchMask = IValue.from(Tensor.fromBlob(new byte[] { 1 }, new long[] { 1 }));
+        IValue embeddingsEncodeMask = IValue.from(Tensor.fromBlob(new byte[] { 1 }, new long[] { 1 }));
+        IValue featureEncodeMask = null;
+        IValue predictMask = null;
+        IValue idx = IValue.from(Tensor.fromBlob(new long[] { chunkHistory.size() - 1 }, new long[] { 1 }));
+
+        if (chunk.getSpeaker() == NeuralEntrainmentChunk.Speaker.partner) {
+            System.out.println("NeuralEntrainmentStrategyProcessor: Partner");
+            featureEncodeMask = IValue.from(Tensor.fromBlob(new byte[] { 1 }, new long[] { 1 }));
+            predictMask = IValue.from(Tensor.fromBlob(new byte[] { 0 }, new long[] { 1 }));
+        } else {
+            System.out.println("NeuralEntrainmentStrategyProcessor: Us");
+            featureEncodeMask = IValue.from(Tensor.fromBlob(new byte[] { 0 }, new long[] { 1 }));
+            predictMask = IValue.from(Tensor.fromBlob(new byte[] { 1 }, new long[] { 1 }));
+        }
+
+        // IValue featureMask =
+        // getHistoryMaskIValue(conversation.getEncodedHistory().length + 1);
+
+        this.model.forward(
+                featureInput, // acoutsic_prosodic_features: Tensor
+                embeddingInput, // embeddings: Tensor
+                embeddingLen, // embeddings_len: Tensor
+                speaker, // speakers: Tensor
+                featureEncoderHidden, // encoder_hidden: List[Tuple[Tensor, Tensor]]
+                decoderHidden, // decoder_hidden: List[Tuple[Tensor, Tensor]]
+                featureHistory, // history: Tensor
+                batchMask, // batch_mask: Tensor
+                embeddingsEncodeMask, // embeddings_encode_mask: Tensor
+                featureEncodeMask, // feature_encode_mask: Tensor
+                predictMask, // predict_mask: Tensor
+                idx // idx: Tensor
+        );
+
         return messages;
     }
 

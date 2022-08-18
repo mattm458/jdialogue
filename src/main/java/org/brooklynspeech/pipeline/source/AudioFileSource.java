@@ -18,10 +18,7 @@ public class AudioFileSource extends Source<byte[]> {
             throws UnsupportedAudioFileException, IOException {
         super();
 
-        this.stream = AudioSystem.getAudioInputStream(
-                AudioFileSource.class
-                        .getClassLoader()
-                        .getResourceAsStream(filename));
+        this.stream = AudioSystem.getAudioInputStream(getClass().getResource(filename));
 
         this.packetSize = packetSize;
     }

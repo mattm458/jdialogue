@@ -11,7 +11,7 @@ public class ContextCommitProcessor<ChunkType extends Chunk, ConversationType ex
     @Override
     public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) throws InterruptedException {
         ConversationType conversation = message.conversation;
-        conversation.commitFeatures(message.chunk);
+        conversation.commitChunk(message.chunk);
 
         return message;
     }

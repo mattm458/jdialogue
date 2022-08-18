@@ -44,7 +44,8 @@ public class EmbeddingFeatureProcessor<ChunkType extends Chunk, ConversationType
             embeddingsList.add(emb);
         }
 
-        return (float[][]) embeddingsList.toArray();
+        float[][] output = new float[embeddingsList.size()][];
+        return embeddingsList.toArray(output);
     }
 
     public EmbeddingFeatureProcessor(String embeddingPath, int embeddingDim) throws FileNotFoundException, IOException {

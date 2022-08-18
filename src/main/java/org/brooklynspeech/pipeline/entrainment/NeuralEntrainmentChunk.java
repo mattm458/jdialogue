@@ -3,7 +3,6 @@ package org.brooklynspeech.pipeline.entrainment;
 import org.brooklynspeech.pipeline.data.FeatureChunk;
 
 public class NeuralEntrainmentChunk extends FeatureChunk {
-
     public static float[][] mergeFeatures(NeuralEntrainmentChunk[] chunks) {
         final float[][] output = new float[chunks.length][NeuralEntrainmentChunk.featureKeys.length];
 
