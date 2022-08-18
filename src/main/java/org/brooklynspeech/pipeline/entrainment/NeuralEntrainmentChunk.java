@@ -1,4 +1,6 @@
-package org.brooklynspeech.pipeline.data;
+package org.brooklynspeech.pipeline.entrainment;
+
+import org.brooklynspeech.pipeline.data.FeatureChunk;
 
 public class NeuralEntrainmentChunk extends FeatureChunk {
 
