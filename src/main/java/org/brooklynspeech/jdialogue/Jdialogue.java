@@ -35,7 +35,7 @@ public class Jdialogue {
                                 .addProcessor(new ContextCommitProcessor<>());
 
                 final Pipeline<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>> userPipeline = new Pipeline<>(
-                                new SocketObjectSource<>(NeuralEntrainmentChunk.class, 9001))
+                                new SocketObjectSource<>(NeuralEntrainmentChunk.class, 9990))
                                 .addProcessor(new ConversationWrapperProcessor<>(conversation))
                                 .addProcessor(new FileSaverProcessor<>(FORMAT))
                                 .addProcessor(new PraatFeatureProcessor<>())
@@ -51,6 +51,16 @@ public class Jdialogue {
                                                 256, 2, 256, 300));
 
                 Process voskProcess = JavaProcess.exec(VoskJDialogue.class, null);
+
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+                        @Override
+                        public void run() {
+                                voskProcess.destroy();
+                                mergedPipeline.interrupt();
+                                agentPipeline.interrupt();
+                                userPipeline.interrupt();
+                        }
+                });
 
                 mergedPipeline.start();
                 agentPipeline.start();

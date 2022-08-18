@@ -20,7 +20,7 @@ public class VoskJDialogue {
                 .addProcessor(new VoskProcessor<>(NeuralEntrainmentChunk.class,
                         "vosk-model-small-en-us-0.15", FORMAT))
                 .addProcessor(new VADProcessor<>())
-                .setSink(new SocketObjectSink<>(InetAddress.getByName("localhost"), 9001));
+                .setSink(new SocketObjectSink<>(InetAddress.getByName("localhost"), 9990));
 
         pipeline.start();
     }

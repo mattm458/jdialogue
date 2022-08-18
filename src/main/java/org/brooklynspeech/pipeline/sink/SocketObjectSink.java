@@ -3,7 +3,6 @@ package org.brooklynspeech.pipeline.sink;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.brooklynspeech.pipeline.core.Sink;
@@ -11,18 +10,23 @@ import org.brooklynspeech.pipeline.core.Sink;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SocketObjectSink<T> extends Sink<T> {
-    private final Socket socket;
+
+    private final InetAddress address;
+    private final int port ;
 
     public SocketObjectSink(InetAddress address, int port) throws IOException {
         super();
-        this.socket = new Socket(address, port);
+        this.address=address;
+        this.port=port;
     }
 
     @Override
     public void run() {
+        Socket socket ;
         try {
-            ObjectOutputStream stream = new ObjectOutputStream(this.socket.getOutputStream());
+            socket = new Socket(address, port);
 
+            ObjectOutputStream stream = new ObjectOutputStream(socket.getOutputStream());
             ObjectMapper mapper = new ObjectMapper();
 
             while (!Thread.currentThread().isInterrupted()) {
@@ -30,6 +34,8 @@ public class SocketObjectSink<T> extends Sink<T> {
 
                 stream.writeObject(mapper.writeValueAsString(object));
             }
+
+            socket.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
