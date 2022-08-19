@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline;
+package org.brooklynspeech.pipeline.util;
 
 import org.brooklynspeech.pipeline.core.StreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
