@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
-import org.brooklynspeech.pipeline.data.Conversation;
 
 import com.orctom.vad4j.VAD;
 

@@ -10,12 +10,9 @@ public final class NeuralEntrainmentConversation extends FeatureConversation<Neu
     private float[][][] featureEncoderHidden = null;
     private float[][][] decoderHidden = null;
 
-    private final int encodedDim;
-
     public NeuralEntrainmentConversation(int conversationId, int encodedDim) {
         super(conversationId);
         this.encodedHistory = new float[0][encodedDim];
-        this.encodedDim = encodedDim;
     }
 
     public float[][] getEncodedHistory() {
