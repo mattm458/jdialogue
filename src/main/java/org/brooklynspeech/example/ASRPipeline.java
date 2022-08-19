@@ -2,13 +2,13 @@ package org.brooklynspeech.example;
 
 import javax.sound.sampled.AudioFormat;
 
-import org.brooklynspeech.pipeline.ConversationWrapperProcessor;
 import org.brooklynspeech.pipeline.asr.VoskProcessor;
 import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.source.SocketSource;
+import org.brooklynspeech.pipeline.util.ConversationWrapperProcessor;
 
 public class ASRPipeline {
     protected static final int SOURCE_PORT = 9001;

@@ -2,8 +2,6 @@ package org.brooklynspeech.jdialogue;
 
 import javax.sound.sampled.AudioFormat;
 
-import org.brooklynspeech.pipeline.ContextCommitProcessor;
-import org.brooklynspeech.pipeline.ConversationWrapperProcessor;
 import org.brooklynspeech.pipeline.EmbeddingFeatureProcessor;
 import org.brooklynspeech.pipeline.audio.FileSaverProcessor;
 import org.brooklynspeech.pipeline.audio.PraatFeatureProcessor;
@@ -16,6 +14,8 @@ import org.brooklynspeech.pipeline.normalization.PartnerStatsProcessor;
 import org.brooklynspeech.pipeline.source.DummyTextSource;
 import org.brooklynspeech.pipeline.source.MergeSource;
 import org.brooklynspeech.pipeline.source.SocketObjectSource;
+import org.brooklynspeech.pipeline.util.ContextCommitProcessor;
+import org.brooklynspeech.pipeline.util.ConversationWrapperProcessor;
 
 public class Jdialogue {
 
