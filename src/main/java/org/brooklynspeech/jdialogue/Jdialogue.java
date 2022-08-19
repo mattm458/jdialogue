@@ -1,5 +1,7 @@
 package org.brooklynspeech.jdialogue;
 
+import java.util.Map;
+
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.pipeline.EmbeddingFeatureProcessor;
@@ -27,11 +29,13 @@ public class Jdialogue {
         public static final int hiddenSize = 256;
 
         public static void main(String[] args) throws Exception {
+
+                Map<String, float[]> embeddings = EmbeddingFeatureProcessor.load("glove.6B.300d.txt", 300);
                 final NeuralEntrainmentConversation conversation = new NeuralEntrainmentConversation(0, 256);
 
                 final Pipeline<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>> agentPipeline = new Pipeline<>(
                                 new DummyTextSource<>(NeuralEntrainmentChunk.class, conversation))
-                                .addProcessor(new EmbeddingFeatureProcessor<>("glove.6B.300d.txt", 300))
+                                .addProcessor(new EmbeddingFeatureProcessor<>(embeddings, 300))
                                 .addProcessor(new ContextCommitProcessor<>());
 
                 final Pipeline<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>> userPipeline = new Pipeline<>(
@@ -39,7 +43,7 @@ public class Jdialogue {
                                 .addProcessor(new ConversationWrapperProcessor<>(conversation))
                                 .addProcessor(new FileSaverProcessor<>(FORMAT))
                                 .addProcessor(new PraatFeatureProcessor<>())
-                                .addProcessor(new EmbeddingFeatureProcessor<>("glove.6B.300d.txt", 300))
+                                .addProcessor(new EmbeddingFeatureProcessor<>(embeddings, 300))
                                 .addProcessor(new ContextCommitProcessor<>())
                                 .addProcessor(new PartnerStatsProcessor<>());
 
