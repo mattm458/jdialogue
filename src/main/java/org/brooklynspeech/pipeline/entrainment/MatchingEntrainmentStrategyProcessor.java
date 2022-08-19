@@ -3,7 +3,6 @@ package org.brooklynspeech.pipeline.entrainment;
 import java.util.List;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.FeatureChunk;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
@@ -16,19 +15,29 @@ public class MatchingEntrainmentStrategyProcessor<ChunkType extends FeatureChunk
         ConversationType conversation = message.conversation;
         ChunkType chunk = message.chunk;
 
+        try {
+            conversation.acquireConversation();
+            conversation.acquireStats();
+        } catch (InterruptedException e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+
         List<ChunkType> partnerChunks = conversation.getPartnerChunks();
         ChunkType lastPartnerFeatures = partnerChunks.get(partnerChunks.size() - 1);
 
+        conversation.releaseConversation();
+
         for (String key : FeatureChunk.featureKeys) {
             float partnerFeatureVal = lastPartnerFeatures.getFeature(key);
-            float partnerMean = conversation.getPartnerMean(key);
-            float partnerStd = conversation.getPartnerStd(key);
 
-            float ourFeatureNorm = (partnerFeatureVal - partnerMean) / partnerStd;
+            float ourFeatureNorm = (partnerFeatureVal - conversation.getPartnerMean(key))
+                    / conversation.getPartnerStd(key);
 
             chunk.setNormalizedFeature(key, ourFeatureNorm);
-            System.out.println("Entrained " + key + ": " + ourFeatureNorm);
         }
+
+        conversation.releaseStats();
 
         return message;
     }
