@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Chunk;
@@ -21,12 +22,22 @@ import edu.stanford.nlp.process.PTBTokenizer;
 public class EmbeddingFeatureProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
         extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
-    private static HashMap<String, float[]> embeddings = null;
-    private static float[] zeros;
+    private final Map<String, float[]> embeddings;
+    private final float[] zeros;
 
-    // private static int embeddingDim;
+    public EmbeddingFeatureProcessor(Map<String, float[]> embeddings, int embeddingDim) {
+        this.embeddings = embeddings;
+        this.zeros = new float[embeddingDim];
+    }
 
-    public static float[][] getEmbeddings(String text) {
+    @Override
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+        ChunkType chunk = message.chunk;
+        chunk.setEmbeddings(getEmbeddings(chunk.getTranscript()));
+        return message;
+    }
+
+    private float[][] getEmbeddings(String text) {
         // Documentation for the arguments below:
         // https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
         PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(
@@ -37,50 +48,35 @@ public class EmbeddingFeatureProcessor<ChunkType extends Chunk, ConversationType
         LinkedList<float[]> embeddingsList = new LinkedList<>();
 
         while (ptbt.hasNext()) {
-            CoreLabel label = ptbt.next();
-            String value = label.value();
-
-            float[] emb = EmbeddingFeatureProcessor.embeddings.getOrDefault(value, EmbeddingFeatureProcessor.zeros);
-            embeddingsList.add(emb);
+            String value = ptbt.next().value();
+            embeddingsList.add(embeddings.getOrDefault(value, this.zeros));
         }
 
         float[][] output = new float[embeddingsList.size()][];
         return embeddingsList.toArray(output);
     }
 
-    public EmbeddingFeatureProcessor(String embeddingPath, int embeddingDim) throws FileNotFoundException, IOException {
-        if (EmbeddingFeatureProcessor.embeddings == null) {
-            EmbeddingFeatureProcessor.embeddings = new HashMap<>();
-            EmbeddingFeatureProcessor.zeros = new float[embeddingDim];
-            // EmbeddingFeatureProcessor.embeddingDim = embeddingDim;
+    public static Map<String, float[]> load(String embeddingPath, int embeddingDim)
+            throws FileNotFoundException, IOException {
+        HashMap<String, float[]> embeddings = new HashMap<>();
 
-            File file = new File(embeddingPath);
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
+        File file = new File(embeddingPath);
+        BufferedReader br = new BufferedReader(new FileReader(file));
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] lineData = line.split(" ");
-                String key = lineData[0];
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] lineData = line.split(" ");
+            String key = lineData[0];
 
-                float[] emb = new float[lineData.length - 1];
-                for (int i = 1; i < lineData.length; i++) {
-                    emb[i - 1] = Float.parseFloat(lineData[i]);
-                }
-                EmbeddingFeatureProcessor.embeddings.put(key, emb);
+            float[] emb = new float[lineData.length - 1];
+            for (int i = 1; i < lineData.length; i++) {
+                emb[i - 1] = Float.parseFloat(lineData[i]);
             }
 
-            br.close();
+            embeddings.put(key, emb);
         }
-    }
 
-    @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
-        ChunkType chunk = message.chunk;
-
-        float[][] embeddingsList = EmbeddingFeatureProcessor.getEmbeddings(chunk.getTranscript());
-        chunk.setEmbeddings(embeddingsList);
-
-        return message;
+        br.close();
+        return embeddings;
     }
 }
