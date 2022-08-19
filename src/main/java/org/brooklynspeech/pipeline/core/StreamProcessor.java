@@ -2,12 +2,20 @@ package org.brooklynspeech.pipeline.core;
 
 public abstract class StreamProcessor<InType, OutType> extends Processor<InType, OutType> {
 
-    public void setup() {}
+    private boolean isReady = false;
+
+    public boolean isReady() {
+        return isReady;
+    }
+
+    protected void setup() {}
 
     @Override
     public final void run() {
         try {
             setup();
+
+            this.isReady = true;
 
             while (!Thread.currentThread().isInterrupted()) {
                 final InType input = this.inQueue.take();
