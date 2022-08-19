@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.pipeline.asr.VoskProcessor;
+import org.brooklynspeech.pipeline.audio.AudioSocketServerProcessor;
 import org.brooklynspeech.pipeline.audio.VADProcessor;
 import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentChunk;
@@ -17,6 +18,7 @@ public class VoskJDialogue {
     public static void main(String[] args) throws Exception {
         final Pipeline<NeuralEntrainmentChunk> pipeline = new Pipeline<>(
                 new AudioFileSource("/wav/GAME_speakerB.wav", 1024))
+                .addProcessor(new AudioSocketServerProcessor(9991))
                 .addProcessor(new VoskProcessor<>(NeuralEntrainmentChunk.class,
                         "vosk-model-small-en-us-0.15", FORMAT))
                 .addProcessor(new VADProcessor<>())

@@ -7,7 +7,7 @@ import java.net.Socket;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 
-public class AudioSocketForwardProcessor extends PassthroughStreamProcessor<byte[]> {
+public class AudioSocketServerProcessor extends PassthroughStreamProcessor<byte[]> {
 
     private final int port;
 
@@ -15,7 +15,7 @@ public class AudioSocketForwardProcessor extends PassthroughStreamProcessor<byte
     private Socket socket;
     private OutputStream stream;
 
-    public AudioSocketForwardProcessor(int port) throws IOException {
+    public AudioSocketServerProcessor(int port) throws IOException {
         this.port = port;
     }
 
