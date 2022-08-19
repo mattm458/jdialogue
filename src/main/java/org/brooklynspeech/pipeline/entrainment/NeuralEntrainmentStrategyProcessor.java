@@ -137,7 +137,7 @@ public class NeuralEntrainmentStrategyProcessor extends
 
     private static List<NeuralEntrainmentChunk> getChunkHistory(NeuralEntrainmentChunk chunk,
             NeuralEntrainmentConversation conversation) {
-        Iterator<NeuralEntrainmentChunk> iterator = conversation.getFeaturesIterator();
+        Iterator<NeuralEntrainmentChunk> iterator = conversation.getChunksIterator();
 
         NeuralEntrainmentChunk next;
         LinkedList<NeuralEntrainmentChunk> chunks = new LinkedList<>();

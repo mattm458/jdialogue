@@ -45,19 +45,19 @@ public class Conversation<T extends Chunk> {
         this.conversation.release();
     }
 
-    public int getFeaturesSize() {
+    public int getChunkSize() {
         return this.chunks.size();
     }
 
-    public Iterator<T> getFeaturesIterator() {
+    public Iterator<T> getChunksIterator() {
         return this.chunks.iterator();
     }
 
-    public Iterator<T> getPartnerFeaturesIterator() {
+    public Iterator<T> getPartnerChunksIterator() {
         return this.partnerChunks.iterator();
     }
 
-    public List<T> getPartnerFeatures() {
+    public List<T> getPartnerChunks() {
         return this.partnerChunks;
     }
 }

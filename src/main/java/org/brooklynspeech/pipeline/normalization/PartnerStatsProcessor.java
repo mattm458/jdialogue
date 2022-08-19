@@ -23,7 +23,7 @@ public class PartnerStatsProcessor<ChunkType extends FeatureChunk, ConversationT
 
         // Compute means
         HashMap<String, Float> sums = new HashMap<>();
-        iterator = conversation.getPartnerFeaturesIterator();
+        iterator = conversation.getPartnerChunksIterator();
         while (iterator.hasNext()) {
             ChunkType f = iterator.next();
             count += 1;
@@ -40,7 +40,7 @@ public class PartnerStatsProcessor<ChunkType extends FeatureChunk, ConversationT
 
         // Compute standard deviation
         final HashMap<String, Float> diffs = new HashMap<>();
-        iterator = conversation.getPartnerFeaturesIterator();
+        iterator = conversation.getPartnerChunksIterator();
         while (iterator.hasNext()) {
             ChunkType f = iterator.next();
             count += 1;

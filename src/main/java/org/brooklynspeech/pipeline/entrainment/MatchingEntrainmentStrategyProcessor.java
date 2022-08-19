@@ -3,6 +3,7 @@ package org.brooklynspeech.pipeline.entrainment;
 import java.util.List;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
+import org.brooklynspeech.pipeline.data.Chunk;
 import org.brooklynspeech.pipeline.data.ChunkMessage;
 import org.brooklynspeech.pipeline.data.FeatureChunk;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
@@ -11,12 +12,12 @@ public class MatchingEntrainmentStrategyProcessor<ChunkType extends FeatureChunk
         extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> ourFeatures) {
-        ConversationType conversation = ourFeatures.conversation;
-        ChunkType chunk = ourFeatures.chunk;
+    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+        ConversationType conversation = message.conversation;
+        ChunkType chunk = message.chunk;
 
-        List<ChunkType> partnerFeatures = conversation.getPartnerFeatures();
-        ChunkType lastPartnerFeatures = partnerFeatures.get(partnerFeatures.size() - 1);
+        List<ChunkType> partnerChunks = conversation.getPartnerChunks();
+        ChunkType lastPartnerFeatures = partnerChunks.get(partnerChunks.size() - 1);
 
         for (String key : FeatureChunk.featureKeys) {
             float partnerFeatureVal = lastPartnerFeatures.getFeature(key);
@@ -29,6 +30,6 @@ public class MatchingEntrainmentStrategyProcessor<ChunkType extends FeatureChunk
             System.out.println("Entrained " + key + ": " + ourFeatureNorm);
         }
 
-        return ourFeatures;
+        return message;
     }
 }
