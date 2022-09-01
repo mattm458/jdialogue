@@ -10,9 +10,9 @@ import org.brooklynspeech.client.audio.receiver.SocketAudioReceiver;
 public class AudioReceiverClient {
 
     private static String HOSTNAME = "turbo";
-    private static int PORT = 9001;
+    private static int PORT = 9992;
     private static int BUFFER_SIZE = 1024;
-    private static AudioFormat FORMAT = new AudioFormat(16000, 16, 1, true, true);
+    private static AudioFormat FORMAT = new AudioFormat(22040, 16, 1, true, false);
 
     public static void main(String[] args) throws Exception {
         InetAddress address = InetAddress.getByName(HOSTNAME);
