@@ -44,9 +44,8 @@ public class ControllableTacotronTTSProcessor<ChunkType extends FeatureChunk, Co
         this.charMap = new HashMap<>();
         for (int i = 0; i < allowedCharsSorted.length; i++) {
             // The plus one replicates Tacotron encoding behavior. It does this so 0 can be
-            // a valueless padding
-            // character, though this processor does not currently use input padding because
-            // it does not batch inputs
+            // a valueless padding character, though this processor does not currently use
+            // input padding because it does not batch inputs
             this.charMap.put(allowedCharsSorted[i], (long) i + 1);
         }
     }

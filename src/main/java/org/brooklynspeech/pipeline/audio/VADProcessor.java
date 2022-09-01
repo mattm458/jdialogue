@@ -40,7 +40,6 @@ public class VADProcessor<ChunkType extends Chunk>
         }
 
         if (start > 0) {
-
             byte[] trimmed = Arrays.copyOfRange(wavData, start, wavData.length);
             chunk.setWavData(trimmed);
         }
