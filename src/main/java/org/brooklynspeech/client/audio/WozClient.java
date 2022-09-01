@@ -12,8 +12,8 @@ import org.brooklynspeech.client.audio.sender.TextSender;
 
 public class WozClient {
     private static String HOSTNAME = "turbo";
-    private static int AUDIO_RECEIVER_PORT = 9002;
-    private static int TEXT_SENDER_PORT = 9001;
+    private static int AUDIO_RECEIVER_PORT = 9993;
+    private static int TEXT_SENDER_PORT = 9992;
     private static int BUFFER_SIZE = 1024;
     private static AudioFormat FORMAT = new AudioFormat(16000, 16, 1, true, false);
 

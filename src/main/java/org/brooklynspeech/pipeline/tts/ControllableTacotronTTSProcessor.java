@@ -60,7 +60,7 @@ public class ControllableTacotronTTSProcessor<ChunkType extends FeatureChunk, Co
 
     public ControllableTacotronTTSProcessor(String modelPath) {
         // Default allowed characters borrowed from the Tacotron 2 source.
-        this(modelPath, "!'(),.:;? \\-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", '^', 80, 1000);
+        this(modelPath, "!'(),.:;? \\-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", '^', 80, 500);
     }
 
     public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
