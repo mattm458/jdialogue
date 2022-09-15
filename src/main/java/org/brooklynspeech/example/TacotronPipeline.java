@@ -7,7 +7,7 @@ import org.brooklynspeech.pipeline.data.FeatureConversation;
 import org.brooklynspeech.pipeline.entrainment.NeutralEntrainmentStrategyProcessor;
 import org.brooklynspeech.pipeline.sink.SocketSink;
 import org.brooklynspeech.pipeline.source.DummyTextSource;
-import org.brooklynspeech.pipeline.tts.ControllableTacotronTTSProcessor;
+import org.brooklynspeech.pipeline.tts.ControllableTacotronTTSVocoderProcessor;
 
 public class TacotronPipeline {
     protected static final int SOURCE_PORT = 9991;
@@ -20,7 +20,7 @@ public class TacotronPipeline {
         final Pipeline<byte[]> tacotronPipeline = new Pipeline<>(
                 new DummyTextSource<>(FeatureChunk.class, conversation))
                 .addProcessor(new NeutralEntrainmentStrategyProcessor<>())
-                .addProcessor(new ControllableTacotronTTSProcessor<>("tacotron-gpu.pt"))
+                .addProcessor(new ControllableTacotronTTSVocoderProcessor<>("tacotron-hifi-gan.pt"))
                 .addProcessor(new WavDataUnwrapperProcessor<>())
                 .setSink(new SocketSink(SINK_PORT));
 
