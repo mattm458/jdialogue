@@ -10,10 +10,21 @@ import javax.sound.sampled.TargetDataLine;
 
 import org.brooklynspeech.client.audio.common.AudioSocket;
 
+/**
+ * A class capable of capturing audio data from a microphone and streaming it
+ * over a socket connection.
+ */
 public class MicrophoneSender extends AudioSocket {
 
-    private TargetDataLine mic;
-
+    /**
+     * Create a MicrophoneSender object.
+     * 
+     * @param address    The IP address where audio data should be sent
+     * @param port       The port where audio data should be sent
+     * @param format     The audio data format
+     * @param bufferSize The maximum amount of audio data that will be sent at once
+     * @throws IOException
+     */
     public MicrophoneSender(InetAddress address, int port, AudioFormat format, int bufferSize) throws IOException {
         super(address, port, format, bufferSize);
     }
@@ -21,12 +32,15 @@ public class MicrophoneSender extends AudioSocket {
     @Override
     public void run() {
         this.open = true;
+
+        TargetDataLine mic;
+
         try {
             OutputStream outputStream = this.socket.getOutputStream();
 
-            this.mic = AudioSystem.getTargetDataLine(this.format);
-            this.mic.open(this.format, this.bufferSize);
-            this.mic.start();
+            mic = AudioSystem.getTargetDataLine(this.format);
+            mic.open(this.format, this.bufferSize);
+            mic.start();
 
             byte[] buffer = new byte[this.bufferSize];
 
@@ -38,8 +52,8 @@ public class MicrophoneSender extends AudioSocket {
                 }
             }
 
-            this.mic.stop();
-            this.mic.close();
+            mic.stop();
+            mic.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);

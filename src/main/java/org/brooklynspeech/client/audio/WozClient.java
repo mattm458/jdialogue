@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.client.audio.common.AudioSocket;
-import org.brooklynspeech.client.audio.receiver.SocketAudioReceiver;
+import org.brooklynspeech.client.audio.receiver.AudioSocketReceiver;
 import org.brooklynspeech.client.audio.sender.TextSender;
 
 public class WozClient {
@@ -24,7 +24,7 @@ public class WozClient {
         TextSender textSender;
 
         try {
-            receiver = new SocketAudioReceiver(address, AUDIO_RECEIVER_PORT, FORMAT, BUFFER_SIZE);
+            receiver = new AudioSocketReceiver(address, AUDIO_RECEIVER_PORT, FORMAT, BUFFER_SIZE);
             textSender = new TextSender(address, TEXT_SENDER_PORT);
         } catch (Exception e) {
             e.printStackTrace(System.out);

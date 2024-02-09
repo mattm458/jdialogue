@@ -10,9 +10,9 @@ import javax.sound.sampled.SourceDataLine;
 
 import org.brooklynspeech.client.audio.common.AudioSocket;
 
-public class SocketAudioReceiver extends AudioSocket {
+public class AudioSocketReceiver extends AudioSocket {
 
-    public SocketAudioReceiver(InetAddress address, int port, AudioFormat format, int bufferSize)
+    public AudioSocketReceiver(InetAddress address, int port, AudioFormat format, int bufferSize)
             throws IOException {
         super(address, port, format, bufferSize);
     }

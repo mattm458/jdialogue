@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.client.audio.common.AudioSocket;
-import org.brooklynspeech.client.audio.receiver.SocketAudioReceiver;
+import org.brooklynspeech.client.audio.receiver.AudioSocketReceiver;
 
 public class AudioReceiverClient {
 
@@ -19,7 +19,7 @@ public class AudioReceiverClient {
         AudioSocket receiver;
 
         try {
-            receiver = new SocketAudioReceiver(address, PORT, FORMAT, BUFFER_SIZE);
+            receiver = new AudioSocketReceiver(address, PORT, FORMAT, BUFFER_SIZE);
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
