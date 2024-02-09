@@ -1,5 +1,11 @@
 libtorch
 libtorch*
+.vscode
+vosk*
+*.wav
+*.pt
+*.ckpt
+*.txt
 
 # Compiled class file
 *.class
