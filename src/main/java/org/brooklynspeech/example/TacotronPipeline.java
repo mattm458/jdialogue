@@ -1,13 +1,13 @@
 package org.brooklynspeech.example;
 
 import org.brooklynspeech.pipeline.audio.WavByteExtractor;
-import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.data.TurnFeatures;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 import org.brooklynspeech.pipeline.entrainment.NeutralEntrainmentStrategyProcessor;
-import org.brooklynspeech.pipeline.sink.SocketSink;
-import org.brooklynspeech.pipeline.source.DummyTextSource;
 import org.brooklynspeech.pipeline.tts.ControllableTacotronTTSVocoderProcessor;
+import org.common.core.Pipeline;
+import org.common.sink.SocketSink;
+import org.common.source.DummyTextSource;
 
 public class TacotronPipeline {
     protected static final int SOURCE_PORT = 9991;

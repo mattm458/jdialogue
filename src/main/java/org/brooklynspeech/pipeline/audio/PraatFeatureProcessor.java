@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.common.core.PassthroughStreamProcessor;
 
 public class PraatFeatureProcessor<ChunkType extends TurnFeatures, ConversationType extends Conversation<ChunkType>>
         extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {

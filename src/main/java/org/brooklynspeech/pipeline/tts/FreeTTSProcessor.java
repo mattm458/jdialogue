@@ -1,10 +1,10 @@
 package org.brooklynspeech.pipeline.tts;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
 import org.brooklynspeech.pipeline.tts.freetts.BufferAudioPlayer;
+import org.common.core.PassthroughStreamProcessor;
 
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;

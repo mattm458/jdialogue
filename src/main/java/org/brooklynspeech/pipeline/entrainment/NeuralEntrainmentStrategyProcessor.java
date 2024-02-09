@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Turn.Speaker;
+import org.common.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;

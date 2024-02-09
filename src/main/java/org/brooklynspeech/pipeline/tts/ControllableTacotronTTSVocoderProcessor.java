@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.common.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;

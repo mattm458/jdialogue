@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.common.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Conversation;
 
 import edu.stanford.nlp.ling.CoreLabel;
