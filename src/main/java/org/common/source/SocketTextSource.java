@@ -5,13 +5,13 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.common.core.Source;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 
-public class SocketTextSource<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
-        extends Source<TurnConversation<ChunkType, ConversationType>> {
+public class SocketTextSource<ChunkType extends BSLTurn, ConversationType extends BSLConversation<ChunkType>>
+        extends Source<BSLTurnConversation<ChunkType, ConversationType>> {
 
     private final Class<ChunkType> C;
     private final ConversationType conversation;
@@ -37,10 +37,10 @@ public class SocketTextSource<ChunkType extends Turn, ConversationType extends C
                 String text = (String) stream.readObject();
 
                 ChunkType chunk = C.getDeclaredConstructor().newInstance();
-                chunk.setSpeaker(Turn.Speaker.us);
+                chunk.setSpeaker(BSLTurn.Speaker.us);
                 chunk.setTranscript(text);
 
-                this.outQueue.add(new TurnConversation<>(chunk, this.conversation));
+                this.outQueue.add(new BSLTurnConversation<>(chunk, this.conversation));
 
             }
         } catch (Exception e) {

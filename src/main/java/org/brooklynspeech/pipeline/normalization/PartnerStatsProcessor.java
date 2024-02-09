@@ -3,16 +3,16 @@ package org.brooklynspeech.pipeline.normalization;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.brooklynspeech.pipeline.data.TurnConversation;
-import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurnFeatures;
 import org.common.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.FeatureConversation;
+import org.brooklynspeech.pipeline.data.BSLFeatureConversation;
 
-public class PartnerStatsProcessor<ChunkType extends TurnFeatures, ConversationType extends FeatureConversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class PartnerStatsProcessor<ChunkType extends BSLTurnFeatures, ConversationType extends BSLFeatureConversation<ChunkType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<ChunkType, ConversationType>> {
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message)
+    public BSLTurnConversation<ChunkType, ConversationType> doProcess(BSLTurnConversation<ChunkType, ConversationType> message)
             throws InterruptedException {
         final ConversationType conversation = message.conversation;
         Iterator<ChunkType> iterator;
@@ -28,13 +28,13 @@ public class PartnerStatsProcessor<ChunkType extends TurnFeatures, ConversationT
             ChunkType f = iterator.next();
             count += 1;
 
-            for (String featureKey : TurnFeatures.featureKeys) {
+            for (String featureKey : BSLTurnFeatures.featureKeys) {
                 float sum = sums.getOrDefault(featureKey, 0.0f);
                 sum += f.getFeature(featureKey);
                 sums.put(featureKey, sum);
             }
         }
-        for (String featureKey : TurnFeatures.featureKeys) {
+        for (String featureKey : BSLTurnFeatures.featureKeys) {
             conversation.setPartnerMean(featureKey, sums.get(featureKey) / count);
         }
 
@@ -45,13 +45,13 @@ public class PartnerStatsProcessor<ChunkType extends TurnFeatures, ConversationT
             ChunkType f = iterator.next();
             count += 1;
 
-            for (String featureKey : TurnFeatures.featureKeys) {
+            for (String featureKey : BSLTurnFeatures.featureKeys) {
                 float diff = diffs.getOrDefault(featureKey, 0.0f);
                 diff += Math.pow(f.getFeature(featureKey) - conversation.getPartnerMean(featureKey), 2);
                 diffs.put(featureKey, diff);
             }
         }
-        for (String featureKey : TurnFeatures.featureKeys) {
+        for (String featureKey : BSLTurnFeatures.featureKeys) {
             float std = (float) Math.sqrt(diffs.get(featureKey) / count);
             conversation.setPartnerStd(featureKey, std);
         }

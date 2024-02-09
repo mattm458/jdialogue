@@ -10,13 +10,13 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.common.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 
-public class FileSaverProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class FileSaverProcessor<ChunkType extends BSLTurn, ConversationType extends BSLConversation<ChunkType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<ChunkType, ConversationType>> {
 
     private final AudioFormat format;
 
@@ -25,7 +25,7 @@ public class FileSaverProcessor<ChunkType extends Turn, ConversationType extends
     }
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
+    public BSLTurnConversation<ChunkType, ConversationType> doProcess(BSLTurnConversation<ChunkType, ConversationType> message) {
         ChunkType chunk = message.chunk;
         ConversationType conversation = message.conversation;
 

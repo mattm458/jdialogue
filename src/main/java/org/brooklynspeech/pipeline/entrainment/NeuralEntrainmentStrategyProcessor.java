@@ -4,15 +4,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.brooklynspeech.pipeline.data.Turn.Speaker;
+import org.brooklynspeech.pipeline.data.BSLTurn.Speaker;
 import org.common.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
 public class NeuralEntrainmentStrategyProcessor extends
-        PassthroughStreamProcessor<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> {
+        PassthroughStreamProcessor<BSLTurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> {
 
     private final Module model;
 
@@ -166,8 +166,8 @@ public class NeuralEntrainmentStrategyProcessor extends
     }
 
     @Override
-    public final TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation> doProcess(
-            TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation> messages) {
+    public final BSLTurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation> doProcess(
+            BSLTurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation> messages) {
 
         NeuralEntrainmentTurnFeatures chunk = messages.chunk;
         NeuralEntrainmentConversation conversation = messages.conversation;

@@ -2,18 +2,19 @@ package org.brooklynspeech.pipeline.entrainment;
 
 import java.util.List;
 
-import org.brooklynspeech.pipeline.data.TurnConversation;
-import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.brooklynspeech.pipeline.data.BSLFeatureConversation;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurnFeatures;
 import org.common.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.FeatureConversation;
 
-public class MatchingEntrainmentStrategyProcessor<ChunkType extends TurnFeatures, ConversationType extends FeatureConversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class MatchingEntrainmentStrategyProcessor<TurnType extends BSLTurnFeatures, ConversationType extends BSLFeatureConversation<TurnType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<TurnType, ConversationType>> {
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
+    public BSLTurnConversation<TurnType, ConversationType> doProcess(
+            BSLTurnConversation<TurnType, ConversationType> message) {
         ConversationType conversation = message.conversation;
-        ChunkType chunk = message.chunk;
+        TurnType chunk = message.chunk;
 
         try {
             conversation.acquireConversation();
@@ -23,12 +24,12 @@ public class MatchingEntrainmentStrategyProcessor<ChunkType extends TurnFeatures
             System.exit(1);
         }
 
-        List<ChunkType> partnerChunks = conversation.getPartnerChunks();
-        ChunkType lastPartnerFeatures = partnerChunks.get(partnerChunks.size() - 1);
+        List<TurnType> partnerChunks = conversation.getPartnerChunks();
+        TurnType lastPartnerFeatures = partnerChunks.get(partnerChunks.size() - 1);
 
         conversation.releaseConversation();
 
-        for (String key : TurnFeatures.featureKeys) {
+        for (String key : TurnType.featureKeys) {
             float partnerFeatureVal = lastPartnerFeatures.getFeature(key);
 
             float ourFeatureNorm = (partnerFeatureVal - conversation.getPartnerMean(key))

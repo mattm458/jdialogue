@@ -1,8 +1,8 @@
 package org.brooklynspeech.pipeline.entrainment;
 
-import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.brooklynspeech.pipeline.data.BSLTurnFeatures;
 
-public class NeuralEntrainmentTurnFeatures extends TurnFeatures {
+public class NeuralEntrainmentTurnFeatures extends BSLTurnFeatures {
     public static float[][] mergeFeatures(NeuralEntrainmentTurnFeatures[] chunks) {
         final float[][] output = new float[chunks.length][NeuralEntrainmentTurnFeatures.featureKeys.length];
 

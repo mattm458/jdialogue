@@ -8,7 +8,7 @@ import org.brooklynspeech.pipeline.EmbeddingFeatureProcessor;
 import org.brooklynspeech.pipeline.audio.FileSaverProcessor;
 import org.brooklynspeech.pipeline.audio.PraatFeatureProcessor;
 import org.brooklynspeech.pipeline.audio.WavByteExtractor;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentTurnFeatures;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentConversation;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentStrategyProcessor;
@@ -41,12 +41,12 @@ public class Jdialogue {
                 Map<String, float[]> embeddings = EmbeddingFeatureProcessor.load("glove.6B.300d.txt", 300);
                 final NeuralEntrainmentConversation conversation = new NeuralEntrainmentConversation(0, 256);
 
-                final Pipeline<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> agentPipeline = new Pipeline<>(
+                final Pipeline<BSLTurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> agentPipeline = new Pipeline<>(
                                 new SocketTextSource<>(NeuralEntrainmentTurnFeatures.class, conversation, TEXT_IN_PORT))
                                 .addProcessor(new ContextCommitProcessor<>())
                                 .addProcessor(new EmbeddingFeatureProcessor<>(embeddings, 300));
 
-                final Pipeline<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> partnerPipeline = new Pipeline<>(
+                final Pipeline<BSLTurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> partnerPipeline = new Pipeline<>(
                                 new SocketObjectSource<>(NeuralEntrainmentTurnFeatures.class, VOSK_IN_PORT))
                                 .addProcessor(new ConversationWrapperProcessor<>(conversation))
                                 .addProcessor(new FileSaverProcessor<>(FORMAT))
@@ -56,7 +56,7 @@ public class Jdialogue {
                                 .addProcessor(new PartnerStatsProcessor<>());
 
                 final Pipeline<byte[]> mergedPipeline = new Pipeline<>(
-                                new MergeSource<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>>()
+                                new MergeSource<BSLTurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>>()
                                                 .add(agentPipeline).add(partnerPipeline))
                                 .addProcessor(new NeuralEntrainmentStrategyProcessor(
                                                 "entrainer.pt", 256, 2,
