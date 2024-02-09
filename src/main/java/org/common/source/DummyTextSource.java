@@ -1,8 +1,8 @@
-package org.brooklynspeech.pipeline.source;
+package org.common.source;
 
-import org.brooklynspeech.pipeline.core.Source;
 import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.common.core.Source;
 import org.brooklynspeech.pipeline.data.Conversation;
 
 public class DummyTextSource<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>

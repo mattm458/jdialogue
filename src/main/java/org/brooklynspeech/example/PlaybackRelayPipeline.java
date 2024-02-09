@@ -1,8 +1,8 @@
 package org.brooklynspeech.example;
 
-import org.brooklynspeech.pipeline.core.Pipeline;
-import org.brooklynspeech.pipeline.sink.SocketSink;
-import org.brooklynspeech.pipeline.source.AudioFileSource;
+import org.common.core.Pipeline;
+import org.common.sink.SocketSink;
+import org.common.source.AudioFileSource;
 
 public class PlaybackRelayPipeline {
     protected static final String ip = "10.8.0.10";

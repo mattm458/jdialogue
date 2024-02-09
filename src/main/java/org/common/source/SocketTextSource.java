@@ -1,13 +1,13 @@
-package org.brooklynspeech.pipeline.source;
+package org.common.source;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.brooklynspeech.pipeline.core.Source;
 import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.common.core.Source;
 import org.brooklynspeech.pipeline.data.Conversation;
 
 public class SocketTextSource<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>

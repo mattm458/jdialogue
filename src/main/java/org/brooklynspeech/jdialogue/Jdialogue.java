@@ -8,20 +8,20 @@ import org.brooklynspeech.pipeline.EmbeddingFeatureProcessor;
 import org.brooklynspeech.pipeline.audio.FileSaverProcessor;
 import org.brooklynspeech.pipeline.audio.PraatFeatureProcessor;
 import org.brooklynspeech.pipeline.audio.WavByteExtractor;
-import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentTurnFeatures;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentConversation;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentStrategyProcessor;
 import org.brooklynspeech.pipeline.normalization.PartnerStatsProcessor;
-import org.brooklynspeech.pipeline.sink.SocketSink;
-import org.brooklynspeech.pipeline.source.MergeSource;
-import org.brooklynspeech.pipeline.source.SocketObjectSource;
-import org.brooklynspeech.pipeline.source.SocketTextSource;
 import org.brooklynspeech.pipeline.tts.ControllableTacotronTTSProcessor;
 import org.brooklynspeech.pipeline.util.ContextCommitProcessor;
 import org.brooklynspeech.pipeline.util.ConversationWrapperProcessor;
 import org.brooklynspeech.pipeline.util.PartnerFilterProcessor;
+import org.common.core.Pipeline;
+import org.common.sink.SocketSink;
+import org.common.source.MergeSource;
+import org.common.source.SocketObjectSource;
+import org.common.source.SocketTextSource;
 
 public class Jdialogue {
 

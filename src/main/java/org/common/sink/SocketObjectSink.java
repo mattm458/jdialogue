@@ -1,11 +1,11 @@
-package org.brooklynspeech.pipeline.sink;
+package org.common.sink;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import org.brooklynspeech.pipeline.core.Sink;
+import org.common.core.Sink;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

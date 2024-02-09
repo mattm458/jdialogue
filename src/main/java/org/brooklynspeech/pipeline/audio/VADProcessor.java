@@ -3,8 +3,8 @@ package org.brooklynspeech.pipeline.audio;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.Turn;
+import org.common.core.PassthroughStreamProcessor;
 
 import com.orctom.vad4j.VAD;
 

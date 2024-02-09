@@ -1,8 +1,8 @@
 package org.brooklynspeech.example;
 
-import org.brooklynspeech.pipeline.core.Pipeline;
-import org.brooklynspeech.pipeline.sink.SocketSink;
-import org.brooklynspeech.pipeline.source.SocketSource;
+import org.common.core.Pipeline;
+import org.common.sink.SocketSink;
+import org.common.source.SocketSource;
 
 public class PassthroughRelayPipeline {
     protected static final int SOURCE_PORT = 9001;

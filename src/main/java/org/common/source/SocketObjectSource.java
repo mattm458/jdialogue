@@ -1,10 +1,10 @@
-package org.brooklynspeech.pipeline.source;
+package org.common.source;
 
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.brooklynspeech.pipeline.core.Source;
+import org.common.core.Source;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -1,4 +1,4 @@
-package org.brooklynspeech.audio.sink;
+package org.common.sink;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,8 +1,8 @@
 package org.brooklynspeech.pipeline.audio;
 
-import org.brooklynspeech.pipeline.core.StreamProcessor;
 import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.common.core.StreamProcessor;
 import org.brooklynspeech.pipeline.data.Conversation;
 
 public class WavByteExtractor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>

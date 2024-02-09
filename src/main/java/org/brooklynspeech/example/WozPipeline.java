@@ -1,13 +1,13 @@
 package org.brooklynspeech.example;
 
 import org.brooklynspeech.pipeline.audio.WavByteExtractor;
-import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.Conversation;
-import org.brooklynspeech.pipeline.sink.SocketSink;
-import org.brooklynspeech.pipeline.source.AudioFileSource;
-import org.brooklynspeech.pipeline.source.SocketTextSource;
 import org.brooklynspeech.pipeline.tts.FreeTTSProcessor;
+import org.common.core.Pipeline;
+import org.common.sink.SocketSink;
+import org.common.source.AudioFileSource;
+import org.common.source.SocketTextSource;
 
 public class WozPipeline {
     protected static final int SYNTH_OUT_PORT = 9993;

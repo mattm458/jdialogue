@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
 
-import org.brooklynspeech.audio.sink.ArraySink;
-import org.brooklynspeech.pipeline.core.StreamProcessor;
 import org.brooklynspeech.pipeline.data.Turn;
+import org.common.core.StreamProcessor;
+import org.common.sink.ArraySink;
 import org.brooklynspeech.pipeline.data.Transcript;
 import org.vosk.LibVosk;
 import org.vosk.LogLevel;

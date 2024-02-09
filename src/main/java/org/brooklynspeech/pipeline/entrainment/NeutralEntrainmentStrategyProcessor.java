@@ -1,8 +1,8 @@
 package org.brooklynspeech.pipeline.entrainment;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.common.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 
 public class NeutralEntrainmentStrategyProcessor<ChunkType extends TurnFeatures, ConversationType extends FeatureConversation<ChunkType>>

@@ -1,10 +1,10 @@
-package org.brooklynspeech.pipeline.source;
+package org.common.source;
 
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.brooklynspeech.pipeline.core.Source;
+import org.common.core.Source;
 
 public class SocketSource extends Source<byte[]> {
     private final int port;

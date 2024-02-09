@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline.sink;
+package org.common.sink;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 
-import org.brooklynspeech.pipeline.core.Sink;
+import org.common.core.Sink;
 
 public class SocketSink extends Sink<byte[]> {
 

@@ -7,10 +7,10 @@ import javax.sound.sampled.AudioFormat;
 import org.brooklynspeech.pipeline.asr.VoskProcessor;
 import org.brooklynspeech.pipeline.audio.AudioSocketServerProcessor;
 import org.brooklynspeech.pipeline.audio.VADProcessor;
-import org.brooklynspeech.pipeline.core.Pipeline;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentTurnFeatures;
-import org.brooklynspeech.pipeline.sink.SocketObjectSink;
-import org.brooklynspeech.pipeline.source.SocketSource;
+import org.common.core.Pipeline;
+import org.common.sink.SocketObjectSink;
+import org.common.source.SocketSource;
 
 public class VoskJDialogue {
     public static final AudioFormat FORMAT = new AudioFormat(16000, 16, 1, true, false);

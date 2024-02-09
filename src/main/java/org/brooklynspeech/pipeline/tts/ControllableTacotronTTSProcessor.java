@@ -9,9 +9,9 @@ import java.util.LinkedList;
 
 import javax.sound.sampled.AudioSystem;
 
-import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.common.core.PassthroughStreamProcessor;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;

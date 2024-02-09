@@ -1,4 +1,4 @@
-package org.brooklynspeech.pipeline.core;
+package org.common.core;
 
 public abstract class StreamProcessor<InType, OutType> extends Processor<InType, OutType> {
 
