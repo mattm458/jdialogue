@@ -1,12 +1,12 @@
 package org.brooklynspeech.pipeline.util;
 
 import org.brooklynspeech.pipeline.core.StreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Turn;
+import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
 
-public class ConversationWrapperProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends StreamProcessor<ChunkType, ChunkMessage<ChunkType, ConversationType>> {
+public class ConversationWrapperProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
+        extends StreamProcessor<ChunkType, TurnConversation<ChunkType, ConversationType>> {
 
     private final ConversationType conversation;
 
@@ -16,7 +16,7 @@ public class ConversationWrapperProcessor<ChunkType extends Chunk, ConversationT
     }
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkType chunk) {
-        return new ChunkMessage<>(chunk, this.conversation);
+    public TurnConversation<ChunkType, ConversationType> doProcess(ChunkType chunk) {
+        return new TurnConversation<>(chunk, this.conversation);
     }
 }

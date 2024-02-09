@@ -2,7 +2,7 @@ package org.brooklynspeech.pipeline.entrainment;
 
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 
-public final class NeuralEntrainmentConversation extends FeatureConversation<NeuralEntrainmentChunk> {
+public final class NeuralEntrainmentConversation extends FeatureConversation<NeuralEntrainmentTurnFeatures> {
 
     final static int PADDING = 1;
 

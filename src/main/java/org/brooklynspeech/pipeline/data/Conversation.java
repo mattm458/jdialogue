@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class Conversation<T extends Chunk> {
+public class Conversation<T extends Turn> {
 
     private final int conversationId;
 
@@ -36,7 +36,7 @@ public class Conversation<T extends Chunk> {
 
         this.chunks.add(f);
 
-        if (f.getSpeaker() == Chunk.Speaker.partner) {
+        if (f.getSpeaker() == Turn.Speaker.partner) {
             this.partnerChunks.add(f);
         } else {
             this.usChunks.add(f);

@@ -10,15 +10,15 @@ import java.util.LinkedList;
 import javax.sound.sampled.AudioSystem;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
-import org.brooklynspeech.pipeline.data.FeatureChunk;
+import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.TurnFeatures;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
-public class ControllableTacotronTTSProcessor<ChunkType extends FeatureChunk, ConversationType extends FeatureConversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class ControllableTacotronTTSProcessor<ChunkType extends TurnFeatures, ConversationType extends FeatureConversation<ChunkType>>
+        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
 
     private final Module model;
     private final HashMap<Character, Long> charMap;
@@ -63,7 +63,7 @@ public class ControllableTacotronTTSProcessor<ChunkType extends FeatureChunk, Co
         this(modelPath, "!'(),.:;? \\-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", '^', 80, 500);
     }
 
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
         ChunkType chunk = message.chunk;
         ConversationType conversation = message.conversation;
 
@@ -91,9 +91,9 @@ public class ControllableTacotronTTSProcessor<ChunkType extends FeatureChunk, Co
                 Tensor.fromBlob(new float[this.mels * this.maxMelLen], new long[] { 1, this.maxMelLen, this.mels })));
         IValue ttsDataIValue = IValue.dictStringKeyFrom(ttsData);
 
-        float[] featuresArr = new float[FeatureChunk.featureKeys.length];
-        for (int i = 0; i < FeatureChunk.featureKeys.length; i++) {
-            featuresArr[i] = chunk.getNormalizedFeature(FeatureChunk.featureKeys[i]);
+        float[] featuresArr = new float[TurnFeatures.featureKeys.length];
+        for (int i = 0; i < TurnFeatures.featureKeys.length; i++) {
+            featuresArr[i] = chunk.getNormalizedFeature(TurnFeatures.featureKeys[i]);
         }
 
         HashMap<String, IValue> ttsMetadata = new HashMap<>();

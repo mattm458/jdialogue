@@ -3,7 +3,7 @@ package org.brooklynspeech.pipeline.data;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class FeatureConversation<T extends FeatureChunk> extends Conversation<T> {
+public class FeatureConversation<T extends TurnFeatures> extends Conversation<T> {
 
     private final HashMap<String, Float> usMean = new HashMap<>();
     private final HashMap<String, Float> usStd = new HashMap<>();

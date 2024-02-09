@@ -5,15 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
-import org.brooklynspeech.pipeline.data.FeatureChunk;
+import org.brooklynspeech.pipeline.data.TurnFeatures;
 
-public class PraatFeatureProcessor<ChunkType extends FeatureChunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class PraatFeatureProcessor<ChunkType extends TurnFeatures, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
         ChunkType chunk = message.chunk;
 
         final String wavPath = chunk.getWavPath();

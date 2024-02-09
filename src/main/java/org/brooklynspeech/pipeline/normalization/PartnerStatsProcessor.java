@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
-import org.brooklynspeech.pipeline.data.FeatureChunk;
+import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.TurnFeatures;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 
-public class PartnerStatsProcessor<ChunkType extends FeatureChunk, ConversationType extends FeatureConversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class PartnerStatsProcessor<ChunkType extends TurnFeatures, ConversationType extends FeatureConversation<ChunkType>>
+        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message)
+    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message)
             throws InterruptedException {
         final ConversationType conversation = message.conversation;
         Iterator<ChunkType> iterator;
@@ -28,13 +28,13 @@ public class PartnerStatsProcessor<ChunkType extends FeatureChunk, ConversationT
             ChunkType f = iterator.next();
             count += 1;
 
-            for (String featureKey : FeatureChunk.featureKeys) {
+            for (String featureKey : TurnFeatures.featureKeys) {
                 float sum = sums.getOrDefault(featureKey, 0.0f);
                 sum += f.getFeature(featureKey);
                 sums.put(featureKey, sum);
             }
         }
-        for (String featureKey : FeatureChunk.featureKeys) {
+        for (String featureKey : TurnFeatures.featureKeys) {
             conversation.setPartnerMean(featureKey, sums.get(featureKey) / count);
         }
 
@@ -45,13 +45,13 @@ public class PartnerStatsProcessor<ChunkType extends FeatureChunk, ConversationT
             ChunkType f = iterator.next();
             count += 1;
 
-            for (String featureKey : FeatureChunk.featureKeys) {
+            for (String featureKey : TurnFeatures.featureKeys) {
                 float diff = diffs.getOrDefault(featureKey, 0.0f);
                 diff += Math.pow(f.getFeature(featureKey) - conversation.getPartnerMean(featureKey), 2);
                 diffs.put(featureKey, diff);
             }
         }
-        for (String featureKey : FeatureChunk.featureKeys) {
+        for (String featureKey : TurnFeatures.featureKeys) {
             float std = (float) Math.sqrt(diffs.get(featureKey) / count);
             conversation.setPartnerStd(featureKey, std);
         }

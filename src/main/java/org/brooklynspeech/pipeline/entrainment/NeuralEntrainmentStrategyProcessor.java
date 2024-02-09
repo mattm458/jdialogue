@@ -5,14 +5,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk.Speaker;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Turn.Speaker;
+import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
 public class NeuralEntrainmentStrategyProcessor extends
-        PassthroughStreamProcessor<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>> {
+        PassthroughStreamProcessor<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> {
 
     private final Module model;
 
@@ -39,7 +39,7 @@ public class NeuralEntrainmentStrategyProcessor extends
     }
 
     private static IValue chunkFeaturesToIValue(final float[] features) {
-        final int featureDim = NeuralEntrainmentChunk.featureKeys.length;
+        final int featureDim = NeuralEntrainmentTurnFeatures.featureKeys.length;
 
         return IValue.from(Tensor.fromBlob(features, new long[] { 1, featureDim }));
     }
@@ -113,7 +113,7 @@ public class NeuralEntrainmentStrategyProcessor extends
         }
     }
 
-    private static IValue getEmbeddingIValue(NeuralEntrainmentChunk chunk, int embeddingDim) {
+    private static IValue getEmbeddingIValue(NeuralEntrainmentTurnFeatures chunk, int embeddingDim) {
         float[][] embeddings = chunk.getEmbeddings();
 
         int embeddingIdx = 0;
@@ -129,18 +129,18 @@ public class NeuralEntrainmentStrategyProcessor extends
         return IValue.from(Tensor.fromBlob(embeddingsFlattened, new long[] { 1, embeddings.length, embeddingDim }));
     }
 
-    private static IValue getEmbeddingLenIValue(NeuralEntrainmentChunk chunk) {
+    private static IValue getEmbeddingLenIValue(NeuralEntrainmentTurnFeatures chunk) {
         float[][] embeddings = chunk.getEmbeddings();
 
         return IValue.from(Tensor.fromBlob(new long[] { embeddings.length }, new long[] { 1 }));
     }
 
-    private static List<NeuralEntrainmentChunk> getChunkHistory(NeuralEntrainmentChunk chunk,
+    private static List<NeuralEntrainmentTurnFeatures> getChunkHistory(NeuralEntrainmentTurnFeatures chunk,
             NeuralEntrainmentConversation conversation) {
-        Iterator<NeuralEntrainmentChunk> iterator = conversation.getChunksIterator();
+        Iterator<NeuralEntrainmentTurnFeatures> iterator = conversation.getChunksIterator();
 
-        NeuralEntrainmentChunk next;
-        LinkedList<NeuralEntrainmentChunk> chunks = new LinkedList<>();
+        NeuralEntrainmentTurnFeatures next;
+        LinkedList<NeuralEntrainmentTurnFeatures> chunks = new LinkedList<>();
 
         while (iterator.hasNext() && (next = iterator.next()) != chunk) {
             chunks.add(next);
@@ -166,22 +166,22 @@ public class NeuralEntrainmentStrategyProcessor extends
     }
 
     @Override
-    public final ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation> doProcess(
-            ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation> messages) {
+    public final TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation> doProcess(
+            TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation> messages) {
 
-        NeuralEntrainmentChunk chunk = messages.chunk;
+        NeuralEntrainmentTurnFeatures chunk = messages.chunk;
         NeuralEntrainmentConversation conversation = messages.conversation;
 
-        List<NeuralEntrainmentChunk> chunkHistory = getChunkHistory(chunk, conversation);
+        List<NeuralEntrainmentTurnFeatures> chunkHistory = getChunkHistory(chunk, conversation);
 
         float[][] history = conversation.getEncodedHistory();
         if (history.length == 0) {
             history = new float[1][this.encodedDim];
         }
 
-        float[] features = new float[NeuralEntrainmentChunk.featureKeys.length];
-        for (int i = 0; i < NeuralEntrainmentChunk.featureKeys.length; i++) {
-            features[i] = chunk.getNormalizedFeature(NeuralEntrainmentChunk.featureKeys[i], 0.0f);
+        float[] features = new float[NeuralEntrainmentTurnFeatures.featureKeys.length];
+        for (int i = 0; i < NeuralEntrainmentTurnFeatures.featureKeys.length; i++) {
+            features[i] = chunk.getNormalizedFeature(NeuralEntrainmentTurnFeatures.featureKeys[i], 0.0f);
         }
 
         IValue featureInput = chunkFeaturesToIValue(features);
@@ -201,7 +201,7 @@ public class NeuralEntrainmentStrategyProcessor extends
         IValue predictMask = null;
         IValue idx = IValue.from(Tensor.fromBlob(new long[] { chunkHistory.size() - 1 }, new long[] { 1 }));
 
-        if (chunk.getSpeaker() == NeuralEntrainmentChunk.Speaker.partner) {
+        if (chunk.getSpeaker() == NeuralEntrainmentTurnFeatures.Speaker.partner) {
             featureEncodeMask = IValue.from(Tensor.fromBlob(new byte[] { 1 }, new long[] { 1 }));
             predictMask = IValue.from(Tensor.fromBlob(new byte[] { 0 }, new long[] { 1 }));
         } else {
@@ -224,7 +224,7 @@ public class NeuralEntrainmentStrategyProcessor extends
                 idx // idx: Tensor
         );
 
-        if (chunk.getSpeaker() == NeuralEntrainmentChunk.Speaker.partner) {
+        if (chunk.getSpeaker() == NeuralEntrainmentTurnFeatures.Speaker.partner) {
             // If this was a partner utterance, we can expand the history and hidden tensors
             // to save for another turn.
             float[][] expandedHistory = expandHistory(featureHistory.toTensor().getDataAsFloatArray(), history.length,
@@ -247,8 +247,8 @@ public class NeuralEntrainmentStrategyProcessor extends
              * to save them in the encoded history.
              */
             float[] resultsExpanded = results.toTuple()[0].toTensor().getDataAsFloatArray();
-            for (int i = 0; i < NeuralEntrainmentChunk.featureKeys.length; i++) {
-                chunk.setNormalizedFeature(NeuralEntrainmentChunk.featureKeys[i], resultsExpanded[i]);
+            for (int i = 0; i < NeuralEntrainmentTurnFeatures.featureKeys.length; i++) {
+                chunk.setNormalizedFeature(NeuralEntrainmentTurnFeatures.featureKeys[i], resultsExpanded[i]);
             }
             featureInput = chunkFeaturesToIValue(resultsExpanded);
 

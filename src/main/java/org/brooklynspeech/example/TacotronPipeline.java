@@ -1,8 +1,8 @@
 package org.brooklynspeech.example;
 
-import org.brooklynspeech.pipeline.audio.WavDataUnwrapperProcessor;
+import org.brooklynspeech.pipeline.audio.WavByteExtractor;
 import org.brooklynspeech.pipeline.core.Pipeline;
-import org.brooklynspeech.pipeline.data.FeatureChunk;
+import org.brooklynspeech.pipeline.data.TurnFeatures;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 import org.brooklynspeech.pipeline.entrainment.NeutralEntrainmentStrategyProcessor;
 import org.brooklynspeech.pipeline.sink.SocketSink;
@@ -15,13 +15,13 @@ public class TacotronPipeline {
     protected static final int BUFFER_SIZE = 1024;
 
     public static void main(String[] args) throws Exception {
-        FeatureConversation<FeatureChunk> conversation = new FeatureConversation<>(0);
+        FeatureConversation<TurnFeatures> conversation = new FeatureConversation<>(0);
 
         final Pipeline<byte[]> tacotronPipeline = new Pipeline<>(
-                new DummyTextSource<>(FeatureChunk.class, conversation))
+                new DummyTextSource<>(TurnFeatures.class, conversation))
                 .addProcessor(new NeutralEntrainmentStrategyProcessor<>())
                 .addProcessor(new ControllableTacotronTTSVocoderProcessor<>("tacotron-hifi-gan.pt"))
-                .addProcessor(new WavDataUnwrapperProcessor<>())
+                .addProcessor(new WavByteExtractor<>())
                 .setSink(new SocketSink(SINK_PORT));
 
         tacotronPipeline.start();

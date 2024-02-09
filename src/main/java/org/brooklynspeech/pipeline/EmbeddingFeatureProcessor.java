@@ -11,16 +11,16 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Turn;
+import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
 
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 
-public class EmbeddingFeatureProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class EmbeddingFeatureProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
 
     private final Map<String, float[]> embeddings;
     private final float[] zeros;
@@ -31,7 +31,7 @@ public class EmbeddingFeatureProcessor<ChunkType extends Chunk, ConversationType
     }
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
         ChunkType chunk = message.chunk;
         chunk.setEmbeddings(getEmbeddings(chunk.getTranscript()));
         return message;

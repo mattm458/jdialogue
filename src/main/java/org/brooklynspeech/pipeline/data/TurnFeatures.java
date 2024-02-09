@@ -3,7 +3,7 @@ package org.brooklynspeech.pipeline.data;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FeatureChunk extends Chunk {
+public class TurnFeatures extends Turn {
     public static String[] featureKeys = new String[] {
             "pitch_mean", "pitch_range", "intensity_mean", "jitter", "shimmer", "nhr", "rate"
     };

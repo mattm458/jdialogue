@@ -7,10 +7,10 @@ import javax.sound.sampled.AudioFormat;
 import org.brooklynspeech.pipeline.EmbeddingFeatureProcessor;
 import org.brooklynspeech.pipeline.audio.FileSaverProcessor;
 import org.brooklynspeech.pipeline.audio.PraatFeatureProcessor;
-import org.brooklynspeech.pipeline.audio.WavDataUnwrapperProcessor;
+import org.brooklynspeech.pipeline.audio.WavByteExtractor;
 import org.brooklynspeech.pipeline.core.Pipeline;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
-import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentChunk;
+import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentTurnFeatures;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentConversation;
 import org.brooklynspeech.pipeline.entrainment.NeuralEntrainmentStrategyProcessor;
 import org.brooklynspeech.pipeline.normalization.PartnerStatsProcessor;
@@ -41,13 +41,13 @@ public class Jdialogue {
                 Map<String, float[]> embeddings = EmbeddingFeatureProcessor.load("glove.6B.300d.txt", 300);
                 final NeuralEntrainmentConversation conversation = new NeuralEntrainmentConversation(0, 256);
 
-                final Pipeline<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>> agentPipeline = new Pipeline<>(
-                                new SocketTextSource<>(NeuralEntrainmentChunk.class, conversation, TEXT_IN_PORT))
+                final Pipeline<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> agentPipeline = new Pipeline<>(
+                                new SocketTextSource<>(NeuralEntrainmentTurnFeatures.class, conversation, TEXT_IN_PORT))
                                 .addProcessor(new ContextCommitProcessor<>())
                                 .addProcessor(new EmbeddingFeatureProcessor<>(embeddings, 300));
 
-                final Pipeline<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>> userPipeline = new Pipeline<>(
-                                new SocketObjectSource<>(NeuralEntrainmentChunk.class, VOSK_IN_PORT))
+                final Pipeline<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>> partnerPipeline = new Pipeline<>(
+                                new SocketObjectSource<>(NeuralEntrainmentTurnFeatures.class, VOSK_IN_PORT))
                                 .addProcessor(new ConversationWrapperProcessor<>(conversation))
                                 .addProcessor(new FileSaverProcessor<>(FORMAT))
                                 .addProcessor(new PraatFeatureProcessor<>())
@@ -56,14 +56,14 @@ public class Jdialogue {
                                 .addProcessor(new PartnerStatsProcessor<>());
 
                 final Pipeline<byte[]> mergedPipeline = new Pipeline<>(
-                                new MergeSource<ChunkMessage<NeuralEntrainmentChunk, NeuralEntrainmentConversation>>()
-                                                .add(agentPipeline).add(userPipeline))
+                                new MergeSource<TurnConversation<NeuralEntrainmentTurnFeatures, NeuralEntrainmentConversation>>()
+                                                .add(agentPipeline).add(partnerPipeline))
                                 .addProcessor(new NeuralEntrainmentStrategyProcessor(
                                                 "entrainer.pt", 256, 2,
                                                 256, 2, 256, 300))
                                 .addProcessor(new PartnerFilterProcessor<>())
                                 .addProcessor(new ControllableTacotronTTSProcessor<>("tacotron-gpu.pt"))
-                                .addProcessor(new WavDataUnwrapperProcessor<>())
+                                .addProcessor(new WavByteExtractor<>())
                                 .setSink(new SocketSink(TTS_OUT_PORT));
 
                 Process voskProcess = JavaProcess.exec(VoskJDialogue.class, null);
@@ -74,12 +74,12 @@ public class Jdialogue {
                                 voskProcess.destroy();
                                 mergedPipeline.interrupt();
                                 agentPipeline.interrupt();
-                                userPipeline.interrupt();
+                                partnerPipeline.interrupt();
                         }
                 });
 
                 mergedPipeline.start();
                 agentPipeline.start();
-                userPipeline.start();
+                partnerPipeline.start();
         }
 }

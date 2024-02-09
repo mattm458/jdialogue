@@ -1,15 +1,15 @@
 package org.brooklynspeech.pipeline.util;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Turn;
+import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
 
-public class ContextCommitProcessor<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class ContextCommitProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
+        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) throws InterruptedException {
+    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) throws InterruptedException {
         ConversationType conversation = message.conversation;
         conversation.commitChunk(message.chunk);
 

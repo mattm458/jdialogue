@@ -1,12 +1,12 @@
 package org.brooklynspeech.pipeline.source;
 
 import org.brooklynspeech.pipeline.core.Source;
-import org.brooklynspeech.pipeline.data.Chunk;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
+import org.brooklynspeech.pipeline.data.Turn;
+import org.brooklynspeech.pipeline.data.TurnConversation;
 import org.brooklynspeech.pipeline.data.Conversation;
 
-public class DummyTextSource<ChunkType extends Chunk, ConversationType extends Conversation<ChunkType>>
-        extends Source<ChunkMessage<ChunkType, ConversationType>> {
+public class DummyTextSource<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
+        extends Source<TurnConversation<ChunkType, ConversationType>> {
 
     private Class<ChunkType> C;
     private final ConversationType context;
@@ -33,10 +33,10 @@ public class DummyTextSource<ChunkType extends Chunk, ConversationType extends C
                 Thread.sleep(interval * 1000);
 
                 ChunkType chunk = C.getDeclaredConstructor().newInstance();
-                chunk.setSpeaker(Chunk.Speaker.us);
+                chunk.setSpeaker(Turn.Speaker.us);
                 chunk.setTranscript(this.text);
 
-                this.outQueue.add(new ChunkMessage<>(chunk, this.context));
+                this.outQueue.add(new TurnConversation<>(chunk, this.context));
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);

@@ -4,11 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.Turn;
 
 import com.orctom.vad4j.VAD;
 
-public class VADProcessor<ChunkType extends Chunk>
+public class VADProcessor<ChunkType extends Turn>
         extends PassthroughStreamProcessor<ChunkType> {
 
     private final VAD vad = new VAD();

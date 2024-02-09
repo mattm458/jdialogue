@@ -3,15 +3,15 @@ package org.brooklynspeech.pipeline.entrainment;
 import java.util.List;
 
 import org.brooklynspeech.pipeline.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.ChunkMessage;
-import org.brooklynspeech.pipeline.data.FeatureChunk;
+import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.TurnFeatures;
 import org.brooklynspeech.pipeline.data.FeatureConversation;
 
-public class MatchingEntrainmentStrategyProcessor<ChunkType extends FeatureChunk, ConversationType extends FeatureConversation<ChunkType>>
-        extends PassthroughStreamProcessor<ChunkMessage<ChunkType, ConversationType>> {
+public class MatchingEntrainmentStrategyProcessor<ChunkType extends TurnFeatures, ConversationType extends FeatureConversation<ChunkType>>
+        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
 
     @Override
-    public ChunkMessage<ChunkType, ConversationType> doProcess(ChunkMessage<ChunkType, ConversationType> message) {
+    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
         ConversationType conversation = message.conversation;
         ChunkType chunk = message.chunk;
 
@@ -28,7 +28,7 @@ public class MatchingEntrainmentStrategyProcessor<ChunkType extends FeatureChunk
 
         conversation.releaseConversation();
 
-        for (String key : FeatureChunk.featureKeys) {
+        for (String key : TurnFeatures.featureKeys) {
             float partnerFeatureVal = lastPartnerFeatures.getFeature(key);
 
             float ourFeatureNorm = (partnerFeatureVal - conversation.getPartnerMean(key))

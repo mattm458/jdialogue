@@ -1,6 +1,6 @@
 package org.brooklynspeech.pipeline.data;
 
-public class Chunk {
+public class Turn {
     public enum Speaker {
         us, partner
     }

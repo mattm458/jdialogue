@@ -6,7 +6,7 @@ import javax.sound.sampled.AudioFormat;
 
 import org.brooklynspeech.audio.sink.ArraySink;
 import org.brooklynspeech.pipeline.core.StreamProcessor;
-import org.brooklynspeech.pipeline.data.Chunk;
+import org.brooklynspeech.pipeline.data.Turn;
 import org.brooklynspeech.pipeline.data.Transcript;
 import org.vosk.LibVosk;
 import org.vosk.LogLevel;
@@ -16,7 +16,7 @@ import org.vosk.Recognizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class VoskProcessor<ChunkType extends Chunk> extends StreamProcessor<byte[], ChunkType> {
+public class VoskProcessor<ChunkType extends Turn> extends StreamProcessor<byte[], ChunkType> {
 
     private final Class<ChunkType> C;
 
@@ -75,7 +75,7 @@ public class VoskProcessor<ChunkType extends Chunk> extends StreamProcessor<byte
                 ChunkType chunk;
                 try {
                     chunk = C.getDeclaredConstructor().newInstance();
-                    chunk.setSpeaker(Chunk.Speaker.partner);
+                    chunk.setSpeaker(Turn.Speaker.partner);
                     chunk.setTranscript(t.text);
                     chunk.setWavData(wavData);
                 } catch (Exception e) {
