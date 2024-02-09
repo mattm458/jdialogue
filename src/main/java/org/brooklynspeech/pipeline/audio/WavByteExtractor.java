@@ -1,14 +1,14 @@
 package org.brooklynspeech.pipeline.audio;
 
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.common.core.StreamProcessor;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 
-public class WavByteExtractor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
-        extends StreamProcessor<TurnConversation<ChunkType, ConversationType>, byte[]> {
+public class WavByteExtractor<TurnType extends BSLTurn, ConversationType extends BSLConversation<TurnType>>
+        extends StreamProcessor<BSLTurnConversation<TurnType, ConversationType>, byte[]> {
 
-    public byte[] doProcess(TurnConversation<ChunkType, ConversationType> message) {
+    public byte[] doProcess(BSLTurnConversation<TurnType, ConversationType> message) {
         return message.chunk.getWavData();
     }
 }

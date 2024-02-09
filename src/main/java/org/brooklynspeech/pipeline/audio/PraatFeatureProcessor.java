@@ -4,17 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.brooklynspeech.pipeline.data.TurnConversation;
-import org.brooklynspeech.pipeline.data.Conversation;
-import org.brooklynspeech.pipeline.data.TurnFeatures;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
+import org.brooklynspeech.pipeline.data.BSLTurnFeatures;
 import org.common.core.PassthroughStreamProcessor;
 
-public class PraatFeatureProcessor<ChunkType extends TurnFeatures, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class PraatFeatureProcessor<TurnType extends BSLTurnFeatures, ConversationType extends BSLConversation<TurnType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<TurnType, ConversationType>> {
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
-        ChunkType chunk = message.chunk;
+    public BSLTurnConversation<TurnType, ConversationType> doProcess(BSLTurnConversation<TurnType, ConversationType> message) {
+        TurnType chunk = message.chunk;
 
         final String wavPath = chunk.getWavPath();
 

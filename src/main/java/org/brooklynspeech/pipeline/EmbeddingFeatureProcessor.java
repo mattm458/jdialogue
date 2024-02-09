@@ -10,17 +10,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.common.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 
-public class EmbeddingFeatureProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class EmbeddingFeatureProcessor<ChunkType extends BSLTurn, ConversationType extends BSLConversation<ChunkType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<ChunkType, ConversationType>> {
 
     private final Map<String, float[]> embeddings;
     private final float[] zeros;
@@ -31,7 +31,7 @@ public class EmbeddingFeatureProcessor<ChunkType extends Turn, ConversationType 
     }
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
+    public BSLTurnConversation<ChunkType, ConversationType> doProcess(BSLTurnConversation<ChunkType, ConversationType> message) {
         ChunkType chunk = message.chunk;
         chunk.setEmbeddings(getEmbeddings(chunk.getTranscript()));
         return message;

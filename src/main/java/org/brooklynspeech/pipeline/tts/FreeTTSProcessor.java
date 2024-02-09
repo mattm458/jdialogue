@@ -1,8 +1,8 @@
 package org.brooklynspeech.pipeline.tts;
 
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.TurnConversation;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 import org.brooklynspeech.pipeline.tts.freetts.BufferAudioPlayer;
 import org.common.core.PassthroughStreamProcessor;
 
@@ -10,8 +10,8 @@ import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
 import com.sun.speech.freetts.util.Utilities;
 
-public class FreeTTSProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class FreeTTSProcessor<ChunkType extends BSLTurn, ConversationType extends BSLConversation<ChunkType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<ChunkType, ConversationType>> {
 
     private final Voice voice;
     private final BufferAudioPlayer audioPlayer;
@@ -28,7 +28,7 @@ public class FreeTTSProcessor<ChunkType extends Turn, ConversationType extends C
     }
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
+    public BSLTurnConversation<ChunkType, ConversationType> doProcess(BSLTurnConversation<ChunkType, ConversationType> message) {
         final ChunkType chunk = message.chunk;
 
         System.out.println("FreeTTSProcessor: " + chunk.getTranscript());

@@ -1,18 +1,18 @@
 package org.brooklynspeech.pipeline.util;
 
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.TurnConversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLTurnConversation;
 import org.common.core.PassthroughStreamProcessor;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 
-public class PartnerFilterProcessor<ChunkType extends Turn, ConversationType extends Conversation<ChunkType>>
-        extends PassthroughStreamProcessor<TurnConversation<ChunkType, ConversationType>> {
+public class PartnerFilterProcessor<ChunkType extends BSLTurn, ConversationType extends BSLConversation<ChunkType>>
+        extends PassthroughStreamProcessor<BSLTurnConversation<ChunkType, ConversationType>> {
 
     @Override
-    public TurnConversation<ChunkType, ConversationType> doProcess(TurnConversation<ChunkType, ConversationType> message) {
+    public BSLTurnConversation<ChunkType, ConversationType> doProcess(BSLTurnConversation<ChunkType, ConversationType> message) {
         ChunkType chunk = message.chunk;
 
-        if (chunk.getSpeaker() == Turn.Speaker.partner) {
+        if (chunk.getSpeaker() == BSLTurn.Speaker.partner) {
             return null;
         }
 

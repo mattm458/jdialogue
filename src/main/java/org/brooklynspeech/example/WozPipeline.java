@@ -1,8 +1,8 @@
 package org.brooklynspeech.example;
 
 import org.brooklynspeech.pipeline.audio.WavByteExtractor;
-import org.brooklynspeech.pipeline.data.Turn;
-import org.brooklynspeech.pipeline.data.Conversation;
+import org.brooklynspeech.pipeline.data.BSLTurn;
+import org.brooklynspeech.pipeline.data.BSLConversation;
 import org.brooklynspeech.pipeline.tts.FreeTTSProcessor;
 import org.common.core.Pipeline;
 import org.common.sink.SocketSink;
@@ -16,7 +16,7 @@ public class WozPipeline {
     protected static final int BUFFER_SIZE = 1024;
 
     public static void main(String[] args) throws Exception {
-        Conversation<Turn> context = new Conversation<>(0);
+        BSLConversation<BSLTurn> context = new BSLConversation<>(0);
 
         final AudioFileSource audioPipelineSource;
         audioPipelineSource = new AudioFileSource("/wav/GAME_speakerB.wav", BUFFER_SIZE);
@@ -24,8 +24,8 @@ public class WozPipeline {
         final Pipeline<byte[]> audioPipeline = new Pipeline<>(audioPipelineSource)
                 .setSink(new SocketSink(AUDIO_SINK_PORT));
 
-        final SocketTextSource<Turn, Conversation<Turn>> textPipelineSource;
-        textPipelineSource = new SocketTextSource<>(Turn.class, context, TEXT_SOURCE_PORT);
+        final SocketTextSource<BSLTurn, BSLConversation<BSLTurn>> textPipelineSource;
+        textPipelineSource = new SocketTextSource<>(BSLTurn.class, context, TEXT_SOURCE_PORT);
 
         final Pipeline<byte[]> textPipeline = new Pipeline<>(textPipelineSource)
                 .addProcessor(new FreeTTSProcessor<>())

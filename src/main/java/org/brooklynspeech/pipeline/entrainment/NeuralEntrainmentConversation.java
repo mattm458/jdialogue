@@ -1,8 +1,8 @@
 package org.brooklynspeech.pipeline.entrainment;
 
-import org.brooklynspeech.pipeline.data.FeatureConversation;
+import org.brooklynspeech.pipeline.data.BSLFeatureConversation;
 
-public final class NeuralEntrainmentConversation extends FeatureConversation<NeuralEntrainmentTurnFeatures> {
+public final class NeuralEntrainmentConversation extends BSLFeatureConversation<NeuralEntrainmentTurnFeatures> {
 
     final static int PADDING = 1;
 
